@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild, inject, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { LucideBot, LucideClock3, LucideEllipsis, LucideSend } from '@lucide/angular';
 import { ChatService } from '../../services/chat.service';
 
 @Component({
@@ -7,7 +8,7 @@ import { ChatService } from '../../services/chat.service';
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, LucideBot, LucideClock3, LucideEllipsis, LucideSend],
 })
 export class ChatComponent {
   private chatService = inject(ChatService);

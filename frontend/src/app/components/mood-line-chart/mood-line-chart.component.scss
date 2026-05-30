@@ -7,6 +7,7 @@
   width: 100%;
   min-height: 360px;
   display: flex;
+  color: var(--primary);
 }
 
 .chart {
@@ -18,12 +19,12 @@
 
 .tick {
   line {
-    stroke: #e4e4e7;
+    stroke: var(--border);
     stroke-width: 1;
   }
 
   text {
-    fill: #a1a1aa;
+    fill: var(--soft-muted);
     font-size: 12px;
     font-weight: 500;
   }
@@ -35,7 +36,7 @@
 
 .line {
   fill: none;
-  stroke: #0f8f94;
+  stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 4;
@@ -46,13 +47,13 @@
 }
 
 .point-dot {
-  fill: #ffffff;
-  stroke: #0f8f94;
+  fill: var(--card);
+  stroke: currentColor;
   stroke-width: 4;
 }
 
 .point-value {
-  fill: #52525b;
+  fill: var(--foreground);
   font-size: 12px;
   font-weight: 650;
   opacity: 0;
@@ -60,7 +61,7 @@
 }
 
 .point-label {
-  fill: #71717a;
+  fill: var(--muted-foreground);
   font-size: 13px;
   font-weight: 500;
 }
