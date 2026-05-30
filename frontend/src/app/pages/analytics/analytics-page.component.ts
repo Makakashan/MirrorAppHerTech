@@ -1,4 +1,5 @@
 import { Component, effect } from '@angular/core';
+import { LucideDownload } from '@lucide/angular';
 import { MoodLineChartComponent } from '../../components/mood-line-chart/mood-line-chart.component';
 import { ChartPoint, Metrics } from '../../models/metrics.model';
 import { MetricsService } from '../../services/metrics.service';
@@ -8,7 +9,7 @@ type AnalyticsPeriod = '7d' | '30d';
 @Component({
   selector: 'app-analytics-page',
   standalone: true,
-  imports: [MoodLineChartComponent],
+  imports: [MoodLineChartComponent, LucideDownload],
   templateUrl: './analytics-page.component.html',
   styleUrl: './analytics-page.component.scss',
 })

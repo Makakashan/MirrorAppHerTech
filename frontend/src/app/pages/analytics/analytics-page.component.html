@@ -10,7 +10,10 @@
           <button type="button" [class.active]="period === '7d'" (click)="setPeriod('7d')">7 days</button>
           <button type="button" [class.active]="period === '30d'" (click)="setPeriod('30d')">30 days</button>
         </div>
-        <button class="outline-btn" type="button">Download</button>
+        <button class="outline-btn" type="button">
+          <svg lucideDownload size="16"></svg>
+          Download
+        </button>
       </div>
     </header>
 

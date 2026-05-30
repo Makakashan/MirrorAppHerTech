@@ -1,4 +1,5 @@
 import { Component, effect } from '@angular/core';
+import { LucideDownload } from '@lucide/angular';
 import { DayMood } from '../../models/metrics.model';
 import { MetricsService } from '../../services/metrics.service';
 
@@ -13,7 +14,7 @@ type CalendarView = 'month' | 'week';
 @Component({
   selector: 'app-calendar-page',
   standalone: true,
-  imports: [],
+  imports: [LucideDownload],
   templateUrl: './calendar-page.component.html',
   styleUrl: './calendar-page.component.scss',
 })

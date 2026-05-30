@@ -10,7 +10,10 @@
           <button type="button" [class.active]="view === 'month'" (click)="setView('month')">Month</button>
           <button type="button" [class.active]="view === 'week'" (click)="setView('week')">Week</button>
         </div>
-        <button class="outline-btn" type="button">Export</button>
+        <button class="outline-btn" type="button">
+          <svg lucideDownload size="16"></svg>
+          Export
+        </button>
       </div>
     </header>
 
