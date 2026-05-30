@@ -1,0 +1,13 @@
+<div class="card">
+  <div class="card-icon-wrap">
+    <img [src]="card.icon" [alt]="card.textMain" class="card-icon" />
+  </div>
+  <p class="card-text">
+    <span class="card-text--main">{{ card.textMain }} </span>
+    <span class="card-text--secondary">{{ card.textSecondary }}</span>
+  </p>
+  <button class="ask-btn" (click)="askThis.emit(card)">
+    <span>Ask this</span>
+    <img [src]="flashIcon" alt="" class="flash-icon" />
+  </button>
+</div>

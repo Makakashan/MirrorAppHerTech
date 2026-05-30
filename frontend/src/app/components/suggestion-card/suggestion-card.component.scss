@@ -1,0 +1,67 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  padding: 13px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+.card-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.card-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.card-text {
+  font-family: 'Anonymous Pro', monospace;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+  word-break: break-word;
+}
+
+.card-text--main {
+  color: #515151;
+}
+
+.card-text--secondary {
+  color: #ffffff;
+}
+
+.ask-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  span {
+    font-family: 'Anonymous Pro', monospace;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.64);
+    text-decoration: underline;
+    white-space: nowrap;
+  }
+}
+
+.flash-icon {
+  width: 14px;
+  height: 14px;
+}

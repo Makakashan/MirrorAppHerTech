@@ -1,0 +1,39 @@
+<div class="page">
+
+  <div class="top">
+    <app-navbar [menuIcon]="menuIcon" />
+
+    <div class="contents">
+      <div class="hero">
+        <div class="title-block">
+          <p class="gradient-title">Understand yourself</p>
+          <p class="gradient-title">Look into the Mirror</p>
+        </div>
+        <p class="subtitle">Talk freely and our AI will mirror your inner state</p>
+      </div>
+
+      <app-search-bar
+        [micIcon]="micIcon"
+        [value]="searchQuery"
+        (valueChange)="searchQuery = $event"
+        (submit)="sendMessage($event)"
+      />
+
+      <div class="suggestions-section">
+        <p class="suggestions-label">Recent chats</p>
+        <div class="cards">
+          @for (card of suggestions; track card.textMain) {
+            <app-suggestion-card
+              [card]="card"
+              [flashIcon]="flashIcon"
+              (askThis)="onAskThis($event)"
+            />
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-footer />
+
+</div>

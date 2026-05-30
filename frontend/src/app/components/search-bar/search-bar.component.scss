@@ -1,0 +1,41 @@
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 670px;
+  background: #fff;
+  border-radius: 40px;
+  padding: 12px 18px 12px 51px;
+  gap: 12px;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: 'Anonymous Pro', monospace;
+  font-size: 16px;
+  font-weight: 400;
+  color: #515151;
+  background: transparent;
+
+  &::placeholder {
+    color: #515151;
+  }
+}
+
+.mic-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+
+  img {
+    width: 22px;
+    height: 22px;
+  }
+}
