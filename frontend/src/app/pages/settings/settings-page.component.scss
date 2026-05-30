@@ -1,0 +1,146 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.settings-page {
+  min-height: 100%;
+  padding: 24px;
+  color: var(--foreground);
+}
+
+.settings-inner {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.settings-header,
+.panel-heading {
+  display: flex;
+  align-items: center;
+}
+
+.settings-header {
+  justify-content: space-between;
+}
+
+.eyebrow,
+.panel-heading p {
+  margin: 0 0 4px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+h1,
+h2 {
+  margin: 0;
+  color: var(--foreground);
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.panel-heading {
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-icon,
+.theme-icon {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--secondary);
+  color: var(--muted-foreground);
+  flex: 0 0 auto;
+}
+
+.panel-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 14px 18px 18px;
+}
+
+.theme-option {
+  min-height: 92px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--foreground);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  text-align: left;
+
+  &:hover {
+    background: var(--secondary);
+  }
+
+  &.active {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  strong,
+  small {
+    display: block;
+  }
+
+  strong {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  small {
+    margin-top: 3px;
+    color: var(--muted-foreground);
+    font-size: 13px;
+  }
+}
+
+.theme-icon {
+  width: 40px;
+  height: 40px;
+}
+
+@media (max-width: 900px) {
+  .theme-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .settings-page {
+    padding: 16px;
+  }
+}

@@ -1,0 +1,45 @@
+<div class="settings-page">
+  <div class="settings-inner">
+    <header class="settings-header">
+      <div>
+        <p class="eyebrow">Settings</p>
+        <h1>Theme</h1>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <span class="panel-icon"><svg lucidePalette size="18"></svg></span>
+        <div>
+          <p>Interface</p>
+          <h2>Appearance</h2>
+        </div>
+      </div>
+
+      <div class="theme-options">
+        @for (option of themeOptions; track option.mode) {
+          <button
+            type="button"
+            class="theme-option"
+            [class.active]="themeService.mode() === option.mode"
+            (click)="setTheme(option.mode)"
+          >
+            <span class="theme-icon">
+              @if (option.mode === 'light') {
+                <svg lucideSun size="18"></svg>
+              } @else if (option.mode === 'dark') {
+                <svg lucideMoon size="18"></svg>
+              } @else {
+                <svg lucideMonitor size="18"></svg>
+              }
+            </span>
+            <span>
+              <strong>{{ option.label }}</strong>
+              <small>{{ option.description }}</small>
+            </span>
+          </button>
+        }
+      </div>
+    </section>
+  </div>
+</div>
