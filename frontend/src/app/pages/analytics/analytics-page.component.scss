@@ -4,22 +4,299 @@
   overflow-y: auto;
 
   &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-thumb { background: #e5e5e5; border-radius: 4px; }
+  &::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 4px; }
 }
 
 .analytics-page {
   min-height: 100%;
-  display: flex;
-  justify-content: center;
+  padding: 24px;
+  color: #09090b;
 }
 
 .analytics-inner {
   width: 100%;
-  max-width: 860px;
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.page-header,
+.header-actions,
+.panel-heading,
+.source-row,
+.trend-row {
+  display: flex;
+  align-items: center;
+}
+
+.page-header {
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.eyebrow,
+.panel-kicker {
+  margin: 0 0 4px;
+  color: #71717a;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+h1,
+h2 {
+  margin: 0;
+  color: #09090b;
+  letter-spacing: 0;
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.header-actions {
+  gap: 8px;
+}
+
+.segmented {
+  display: inline-flex;
+  height: 36px;
+  padding: 3px;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  background: #f4f4f5;
+
+  button {
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #71717a;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 0 12px;
+  }
+
+  .active {
+    background: #ffffff;
+    color: #09090b;
+    box-shadow: 0 1px 2px rgba(24, 24, 27, 0.08);
+  }
+}
+
+.outline-btn {
+  height: 36px;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #18181b;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0 12px;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.kpi-card,
+.panel {
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.kpi-card {
+  min-height: 116px;
+  padding: 16px;
+
+  span,
+  small {
+    display: block;
+    color: #71717a;
+    font-size: 13px;
+  }
+
+  strong {
+    display: block;
+    margin: 12px 0 8px;
+    color: #09090b;
+    font-size: 28px;
+    font-weight: 650;
+    line-height: 1;
+  }
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 16px;
+}
+
+.panel {
+  min-width: 0;
+  padding: 18px;
+}
+
+.panel--wide {
+  display: flex;
+  flex-direction: column;
+  grid-row: span 2;
+}
+
+.panel-heading {
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  > span {
+    color: #71717a;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
+
+.source-list,
+.insight-list,
+.trend-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.source-list {
+  gap: 2px;
+}
+
+.source-row {
+  min-height: 42px;
+  justify-content: space-between;
+  border-bottom: 1px solid #f4f4f5;
+  color: #3f3f46;
+  font-size: 14px;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  strong {
+    color: #18181b;
+    font-weight: 600;
+  }
+}
+
+.insight-list {
+  gap: 10px;
+
+  p {
+    margin: 0;
+    padding: 12px;
+    border: 1px solid #e4e4e7;
+    border-radius: 8px;
+    background: #fafafa;
+    color: #3f3f46;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+}
+
+.table-panel {
+  padding-bottom: 10px;
+}
+
+.trend-table {
+  border-top: 1px solid #e4e4e7;
+}
+
+.trend-row {
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 96px 96px;
+  gap: 12px;
+  border-bottom: 1px solid #f4f4f5;
+  color: #3f3f46;
+  font-size: 14px;
+
+  strong {
+    font-weight: 600;
+    color: #18181b;
+  }
+}
+
+.trend-row--head {
+  color: #71717a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.positive {
+  color: #15803d;
+}
+
+.negative {
+  color: #be123c;
+}
+
+@media (max-width: 900px) {
+  .kpi-grid,
+  .analysis-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .panel--wide {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
 }
 
 @media (max-width: 640px) {
-  .analytics-inner {
-    max-width: none;
+  .analytics-page {
+    padding: 16px;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .header-actions,
+  .segmented,
+  .outline-btn {
+    width: 100%;
+  }
+
+  .segmented button {
+    flex: 1;
+  }
+
+  .kpi-grid,
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  app-mood-line-chart {
+    min-height: 240px;
+  }
+
+  .trend-row {
+    grid-template-columns: minmax(0, 1fr) 72px 72px;
   }
 }

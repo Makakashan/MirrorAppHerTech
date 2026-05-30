@@ -1,0 +1,33 @@
+<div class="chart-frame">
+  <svg class="chart" [attr.viewBox]="'0 0 ' + width + ' ' + height" role="img" aria-label="Daily mood score chart">
+    <defs>
+      <linearGradient id="moodLineFill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0f8f94" stop-opacity="0.16"/>
+        <stop offset="100%" stop-color="#0f8f94" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+
+    @for (tick of ticks; track tick.value) {
+      <g class="tick">
+        <line [attr.x1]="plot.left" [attr.y1]="tick.y" [attr.x2]="width - plot.right" [attr.y2]="tick.y"/>
+        <text x="0" [attr.y]="tick.y + 4">{{ tick.value }}</text>
+      </g>
+    }
+
+    <polygon class="area" [attr.points]="areaPoints"/>
+    <polyline class="line" [attr.points]="linePoints"/>
+
+    @for (point of points; track point.label) {
+      <g class="point">
+        <circle class="point-hit" [attr.cx]="point.chartX" [attr.cy]="point.chartY" r="14"/>
+        <circle class="point-dot" [attr.cx]="point.chartX" [attr.cy]="point.chartY" r="5"/>
+        <text class="point-value" [attr.x]="point.chartX" [attr.y]="point.chartY - 14" text-anchor="middle">
+          {{ point.value }}
+        </text>
+        <text class="point-label" [attr.x]="point.chartX" [attr.y]="height - 12" text-anchor="middle">
+          {{ point.label }}
+        </text>
+      </g>
+    }
+  </svg>
+</div>

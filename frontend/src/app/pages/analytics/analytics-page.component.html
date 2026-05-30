@@ -1,5 +1,109 @@
 <div class="analytics-page">
   <div class="analytics-inner">
-    <app-metrics-panel />
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Analytics</p>
+        <h1>Reflection signals</h1>
+      </div>
+      <div class="header-actions">
+        <div class="segmented" aria-label="Analytics period">
+          <button type="button" [class.active]="period === '7d'" (click)="setPeriod('7d')">7 days</button>
+          <button type="button" [class.active]="period === '30d'" (click)="setPeriod('30d')">30 days</button>
+        </div>
+        <button class="outline-btn" type="button">Download</button>
+      </div>
+    </header>
+
+    <section class="kpi-grid" aria-label="Key metrics">
+      <article class="kpi-card">
+        <span>Average mood</span>
+        <strong>{{ averageScore }}</strong>
+        <small>{{ deltaLabel }} from baseline</small>
+      </article>
+      <article class="kpi-card">
+        <span>Current streak</span>
+        <strong>{{ streakDays }}</strong>
+        <small>days with entries</small>
+      </article>
+      <article class="kpi-card">
+        <span>Stability</span>
+        <strong>{{ stability }}%</strong>
+        <small>based on day-to-day variance</small>
+      </article>
+      <article class="kpi-card">
+        <span>Peak day</span>
+        <strong>{{ bestDay.label }}</strong>
+        <small>{{ bestDay.value }} mood score</small>
+      </article>
+    </section>
+
+    <section class="analysis-grid">
+      <article class="panel panel--wide">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">Trend</p>
+            <h2>Daily mood score</h2>
+          </div>
+          <span>{{ lowDay.label }} low · {{ bestDay.label }} high</span>
+        </div>
+        <app-mood-line-chart [data]="chartData" />
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">Sources</p>
+            <h2>Input mix</h2>
+          </div>
+        </div>
+        <div class="source-list">
+          @for (source of sources; track source.label) {
+            <div class="source-row">
+              <span>{{ source.label }}</span>
+              <strong>{{ source.value }}</strong>
+            </div>
+          }
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-kicker">Notes</p>
+            <h2>Signals to watch</h2>
+          </div>
+        </div>
+        <div class="insight-list">
+          @for (insight of insights; track insight) {
+            <p>{{ insight }}</p>
+          }
+        </div>
+      </article>
+    </section>
+
+    <section class="panel table-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="panel-kicker">Breakdown</p>
+          <h2>Recent movement</h2>
+        </div>
+      </div>
+      <div class="trend-table">
+        <div class="trend-row trend-row--head">
+          <span>Day</span>
+          <span>Score</span>
+          <span>Change</span>
+        </div>
+        @for (row of trendRows; track row.label) {
+          <div class="trend-row">
+            <span>{{ row.label }}</span>
+            <strong>{{ row.value }}</strong>
+            <span [class.positive]="row.change > 0" [class.negative]="row.change < 0">
+              {{ row.change > 0 ? '+' : '' }}{{ row.change }}
+            </span>
+          </div>
+        }
+      </div>
+    </section>
   </div>
 </div>
