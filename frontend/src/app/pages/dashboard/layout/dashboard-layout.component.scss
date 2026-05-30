@@ -141,71 +141,6 @@
   min-width: 0;
 }
 
-.top-header {
-  height: 60px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  flex-shrink: 0;
-}
-
-.search-wrap {
-  position: relative;
-  max-width: 320px;
-  width: 100%;
-}
-
-.search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--soft-muted);
-  pointer-events: none;
-}
-
-.search-input {
-  width: 100%;
-  background: var(--surface-muted);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 8px 16px 8px 36px;
-  font-size: 14px;
-  font-family: inherit;
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-
-  &::placeholder { color: var(--soft-muted); }
-
-  &:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-soft);
-  }
-}
-
-.bell-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s, color 0.15s;
-
-  &:hover {
-    background: var(--surface-muted);
-    color: var(--text);
-  }
-}
-
 .content {
   flex: 1;
   overflow: hidden;
@@ -215,6 +150,7 @@
 @media (max-width: 900px) {
   .layout {
     flex-direction: column;
+    background: #071016;
     overflow: auto;
   }
 
@@ -222,7 +158,26 @@
     width: 100%;
     min-height: auto;
     border-right: 0;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+    background: #071016;
+  }
+
+  .logo-text {
+    color: #f8fafc;
+  }
+
+  .nav-item {
+    color: rgba(203, 213, 225, 0.68);
+
+    &:hover {
+      background: rgba(45, 212, 191, 0.08);
+      color: #f8fafc;
+    }
+
+    &--active {
+      background: rgba(45, 212, 191, 0.14);
+      color: #2dd4bf;
+    }
   }
 
   .logo {
@@ -248,13 +203,6 @@
     min-height: 0;
   }
 
-  .top-header {
-    height: auto;
-    min-height: 56px;
-    padding: 10px 16px;
-    gap: 12px;
-  }
-
   .content {
     overflow: visible;
   }
@@ -269,9 +217,5 @@
     gap: 8px;
     padding: 9px 10px;
     font-size: 13px;
-  }
-
-  .search-wrap {
-    max-width: none;
   }
 }
