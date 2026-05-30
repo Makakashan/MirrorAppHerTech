@@ -1,0 +1,92 @@
+<div class="calendar-page">
+  <div class="calendar-inner">
+    <header class="calendar-header">
+      <div>
+        <p class="eyebrow">Calendar</p>
+        <h1>{{ currentMonth }}</h1>
+      </div>
+      <div class="header-actions">
+        <div class="segmented" aria-label="Calendar view">
+          <button type="button" [class.active]="view === 'month'" (click)="setView('month')">Month</button>
+          <button type="button" [class.active]="view === 'week'" (click)="setView('week')">Week</button>
+        </div>
+        <button class="outline-btn" type="button">Export</button>
+      </div>
+    </header>
+
+    <section class="summary-row" aria-label="Calendar summary">
+      <article>
+        <span>Logged</span>
+        <strong>{{ completedDays }}</strong>
+      </article>
+      <article>
+        <span>Steady</span>
+        <strong>{{ steadyDays }}</strong>
+      </article>
+      <article>
+        <span>Needs attention</span>
+        <strong>{{ difficultDays }}</strong>
+      </article>
+    </section>
+
+    <section class="calendar-shell">
+      <div class="month-card">
+        <div class="weekdays">
+          @for (weekday of weekdays; track weekday) {
+            <span>{{ weekday }}</span>
+          }
+        </div>
+
+        <div class="days-grid">
+          @for (day of visibleDays; track day.id) {
+            <button
+              type="button"
+              class="day"
+              [class.day-great]="day.mood === 'great'"
+              [class.day-good]="day.mood === 'good'"
+              [class.day-neutral]="day.mood === 'neutral'"
+              [class.day-bad]="day.mood === 'bad'"
+              [class.day-future]="day.isFuture"
+              [class.day-today]="day.isToday"
+              [class.day-selected]="selectedDay.id === day.id"
+              (click)="selectDay(day)"
+            >
+              <span class="day-top">
+                <span class="day-number">{{ day.day }}</span>
+                @if (day.isToday) {
+                  <span class="today-dot" aria-label="Today"></span>
+                }
+              </span>
+              <span class="day-bottom">
+                <span class="mood-dot"></span>
+                <span>{{ moodTone(day.mood) }}</span>
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <aside class="detail-card">
+        <p class="detail-date">{{ selectedWeekday }} · Day {{ selectedDay.day }}</p>
+        <div class="detail-mood">
+          <span
+            class="detail-marker"
+            [class.detail-marker--great]="selectedDay.mood === 'great'"
+            [class.detail-marker--good]="selectedDay.mood === 'good'"
+            [class.detail-marker--neutral]="selectedDay.mood === 'neutral'"
+            [class.detail-marker--bad]="selectedDay.mood === 'bad'"
+          ></span>
+          <div>
+            <strong>{{ moodLabel(selectedDay.mood) }}</strong>
+            <p>{{ selectedDay.isFuture ? 'Planned reflection slot' : 'Recorded reflection' }}</p>
+          </div>
+        </div>
+        <p class="detail-note">{{ selectedDay.note }}</p>
+        <div class="detail-meta">
+          <span>Status</span>
+          <strong>{{ moodTone(selectedDay.mood) }}</strong>
+        </div>
+      </aside>
+    </section>
+  </div>
+</div>
