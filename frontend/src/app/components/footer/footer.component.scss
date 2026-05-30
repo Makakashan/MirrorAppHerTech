@@ -3,10 +3,11 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 12px 40px;
+  padding: 12px clamp(20px, 5vw, 40px);
   font-family: 'Anonymous Pro', monospace;
   font-size: 14px;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.48);
-  white-space: nowrap;
+  gap: 12px;
+  flex-wrap: wrap;
 }

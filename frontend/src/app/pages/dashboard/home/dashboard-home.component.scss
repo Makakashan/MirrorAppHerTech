@@ -3,11 +3,12 @@
 .dashboard {
   display: flex;
   height: 100%;
+  min-height: 0;
 }
 
 .metrics-panel {
   flex: 1;
-  min-width: 360px;
+  min-width: 0;
   max-width: 50%;
   border-right: 1px solid #e5e5e5;
   background: rgba(248, 250, 252, 0.5);
@@ -19,9 +20,34 @@
 
 .chat-panel {
   flex: 1;
-  min-width: 320px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   background: #ffffff;
   min-height: 0;
+}
+
+@media (max-width: 1100px) {
+  .dashboard {
+    flex-direction: column;
+    height: auto;
+    min-height: 100%;
+  }
+
+  .metrics-panel {
+    max-width: none;
+    border-right: 0;
+    border-bottom: 1px solid #e5e5e5;
+    overflow: visible;
+  }
+
+  .chat-panel {
+    min-height: 620px;
+  }
+}
+
+@media (max-width: 640px) {
+  .chat-panel {
+    min-height: 560px;
+  }
 }

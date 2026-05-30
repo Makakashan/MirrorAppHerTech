@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 12px 40px;
+  padding: 12px clamp(20px, 5vw, 40px);
 }
 
 .menu-icon {

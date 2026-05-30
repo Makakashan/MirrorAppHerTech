@@ -1,5 +1,5 @@
 .panel {
-  padding: 24px;
+  padding: clamp(16px, 3vw, 24px);
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -73,7 +73,7 @@
   background: #ffffff;
   border: 1px solid #e5e5e5;
   border-radius: 16px;
-  padding: 20px;
+  padding: clamp(14px, 3vw, 20px);
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
@@ -120,7 +120,7 @@
   background: #ffffff;
   border: 1px solid #e5e5e5;
   border-radius: 16px;
-  padding: 20px;
+  padding: clamp(12px, 3vw, 20px);
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
@@ -197,4 +197,27 @@
   background: #fff7ed;
   border-color: #fed7aa;
   color: #ea580c;
+}
+
+@media (max-width: 640px) {
+  .panel {
+    gap: 20px;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-svg {
+    height: 140px;
+  }
+
+  .weekdays,
+  .days-grid {
+    gap: 5px;
+  }
+
+  .day-cell {
+    border-radius: 8px;
+  }
 }
