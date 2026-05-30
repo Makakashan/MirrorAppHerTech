@@ -1,0 +1,7 @@
+{
+  "name": "mirror-app-her-tech",
+  "private": true,
+  "scripts": {
+    "dev": "bash scripts/dev.sh"
+  }
+}
