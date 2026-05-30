@@ -1,40 +1,59 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Message } from '../models/message.model';
+import { Metrics } from '../models/metrics.model';
+import { MetricsService } from './metrics.service';
 
 const AI_RESPONSES: { keywords: string[]; text: string }[] = [
   {
-    keywords: ['gym', 'sport', 'workout', 'sweat'],
-    text: 'For gym workouts I recommend the Jabra Elite 8 Active — IP57 water resistance, secure-fit wing tips, and 8 hours of battery life. They stay in place even during intense sessions.',
+    keywords: ['anxious', 'anxiety', 'panic', 'worried', 'stress', 'stressed'],
+    text: 'It sounds like your nervous system is staying on high alert. Try naming the trigger, the body signal, and the thought that followed it.',
   },
   {
-    keywords: ['budget', 'cheap', '$100', 'under', 'affordable'],
-    text: "Under $100, the Sony WH-CH720N is a great choice — noise cancellation, 35-hour battery, and Sony's signature sound tuning. Outstanding value for the price.",
+    keywords: ['sad', 'empty', 'lonely', 'tired', 'hopeless'],
+    text: 'I hear a lower emotional tone in that. Separate what happened from what you concluded about yourself, then track whether this pattern repeats.',
   },
   {
-    keywords: ['ear', 'in-ear', 'earphone'],
-    text: 'For all-day in-ear comfort, the Shure AONIC 215 are hard to beat — lightweight over-ear cable, memory foam tips, and detailed, accurate sound reproduction.',
+    keywords: ['angry', 'irritated', 'frustrated', 'rage'],
+    text: 'Anger often points to a crossed boundary, unmet need, or accumulated pressure. Write down what felt unfair and what you needed in that moment.',
   },
   {
-    keywords: ['noise', 'cancel', 'wireless'],
-    text: 'The Sony WH-1000XM5 leads the market in active noise cancellation. It offers 30-hour battery life, adaptive sound control, and exceptional audio quality — ideal for both commuting and focused work.',
+    keywords: ['avoid', 'procrastinate', 'postpone', 'focus'],
+    text: 'Avoidance usually protects you from discomfort in the short term. The useful question is what emotion appears right before you switch away from the task.',
   },
 ];
 
 const DEFAULT_RESPONSE =
-  "The Sony WH-1000XM5 is an excellent all-around choice — industry-leading noise cancellation, 30-hour battery, and premium sound. It adapts to your environment automatically and works great for both travel and work.";
+  'Describe the situation, emotion, body reaction, and what you did next. Over several entries, Mirror can make recurring triggers and coping strategies easier to see.';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
+  private readonly apiBase = '/api';
+
   readonly messages = signal<Message[]>([
     {
       id: '0',
       role: 'ai',
-      text: "Hi! I'm Mirror, your AI assistant. Tell me what you're looking for and I'll find the perfect headphones for you.",
+      text: "Hi! I'm Mirror. Tell me what has been on your mind, and I will help you reflect on the patterns behind it.",
       time: this.getTime(),
     },
   ]);
 
   readonly isTyping = signal(false);
+
+  constructor(
+    private http: HttpClient,
+    private metricsService: MetricsService,
+  ) {
+    this.http.get<Message[]>(`${this.apiBase}/messages`).subscribe({
+      next: messages => {
+        if (messages.length) {
+          this.messages.set(messages);
+        }
+      },
+      error: () => undefined,
+    });
+  }
 
   sendUserMessage(text: string): void {
     this.messages.update(msgs => [
@@ -42,13 +61,19 @@ export class ChatService {
       { id: Date.now().toString(), role: 'user', text, time: this.getTime() },
     ]);
     this.isTyping.set(true);
-    setTimeout(() => {
-      this.isTyping.set(false);
-      this.messages.update(msgs => [
-        ...msgs,
-        { id: (Date.now() + 1).toString(), role: 'ai', text: this.getResponse(text), time: this.getTime() },
-      ]);
-    }, 1400);
+
+    this.http.post<{ message: Message; metrics: Metrics }>(`${this.apiBase}/chat`, { message: text }).subscribe({
+      next: response => {
+        this.metricsService.set(response.metrics);
+        this.addAiMessage(response.message);
+      },
+      error: () => this.addAiMessage({
+        id: (Date.now() + 1).toString(),
+        role: 'ai',
+        text: this.getResponse(text),
+        time: this.getTime(),
+      }),
+    });
   }
 
   private getTime(): string {
@@ -59,5 +84,10 @@ export class ChatService {
     const q = query.toLowerCase();
     const match = AI_RESPONSES.find(r => r.keywords.some(k => q.includes(k)));
     return match ? match.text : DEFAULT_RESPONSE;
+  }
+
+  private addAiMessage(message: Message): void {
+    this.isTyping.set(false);
+    this.messages.update(msgs => [...msgs, message]);
   }
 }

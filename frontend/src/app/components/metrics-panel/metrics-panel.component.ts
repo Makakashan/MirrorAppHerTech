@@ -1,10 +1,6 @@
-import { Component } from '@angular/core';
-
-interface DayMood {
-  day: number;
-  mood: 'great' | 'good' | 'neutral' | 'bad';
-  isFuture: boolean;
-}
+import { Component, effect } from '@angular/core';
+import { ChartPoint, DayMood, Metrics } from '../../models/metrics.model';
+import { MetricsService } from '../../services/metrics.service';
 
 @Component({
   selector: 'app-metrics-panel',
@@ -15,9 +11,12 @@ interface DayMood {
 })
 export class MetricsPanelComponent {
   readonly today = new Date();
-  readonly currentMonth = this.today.toLocaleDateString('en-US', { month: 'long' });
+  currentMonth = this.today.toLocaleDateString('en-US', { month: 'long' });
+  averageScore = 8.4;
+  averageDelta = 1.2;
+  streakDays = 14;
 
-  readonly chartData = [
+  chartData: ChartPoint[] = [
     { label: 'Mon', value: 72, x: 10 },
     { label: 'Tue', value: 85, x: 107 },
     { label: 'Wed', value: 78, x: 203 },
@@ -27,17 +26,41 @@ export class MetricsPanelComponent {
     { label: 'Sun', value: 84, x: 590 },
   ];
 
-  readonly chartPolyline = this.chartData
-    .map(d => `${d.x},${this.toY(d.value)}`)
-    .join(' ');
+  chartPolyline = this.buildPolyline();
 
-  readonly chartArea =
-    `10,130 ${this.chartPolyline} 590,130`;
+  chartArea = `10,130 ${this.chartPolyline} 590,130`;
 
-  readonly calendarDays: DayMood[] = this.buildCalendar();
+  calendarDays: DayMood[] = this.buildCalendar();
+
+  constructor(private metricsService: MetricsService) {
+    effect(() => {
+      const metrics = this.metricsService.metrics();
+      if (metrics) {
+        this.applyMetrics(metrics);
+      }
+    });
+    this.metricsService.load();
+  }
 
   private toY(v: number): number {
     return Math.round(130 - ((v - 50) / 50) * 120);
+  }
+
+  private buildPolyline(): string {
+    return this.chartData
+      .map(d => `${d.x},${this.toY(d.value)}`)
+      .join(' ');
+  }
+
+  private applyMetrics(metrics: Metrics): void {
+    this.averageScore = metrics.averageScore;
+    this.averageDelta = metrics.averageDelta;
+    this.streakDays = metrics.streakDays;
+    this.currentMonth = metrics.currentMonth;
+    this.chartData = metrics.chartData;
+    this.calendarDays = metrics.calendarDays;
+    this.chartPolyline = this.buildPolyline();
+    this.chartArea = `10,130 ${this.chartPolyline} 590,130`;
   }
 
   private buildCalendar(): DayMood[] {
