@@ -9,6 +9,11 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () =>
+          import('./pages/main/mirror-main-page.component').then(m => m.MirrorMainPageComponent),
+      },
+      {
+        path: 'chat',
+        loadComponent: () =>
           import('./pages/chat/chat-page.component').then(m => m.ChatPageComponent),
       },
       {

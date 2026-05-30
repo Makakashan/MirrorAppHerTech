@@ -1,0 +1,68 @@
+<div class="mirror-main">
+  <app-mirror-three-scene />
+
+  <section class="main-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Mirror</p>
+      <h1>Daily reflection dashboard</h1>
+      <p class="summary">
+        A focused place for mood trends, calendar rhythm, and quick notes.
+      </p>
+
+      <div class="actions">
+        <a class="primary-action" routerLink="/chat">
+          <svg lucideMessageCircle size="17"></svg>
+          Open chat
+        </a>
+        <a class="ghost-action" routerLink="/analytics">
+          <svg lucideChartColumn size="17"></svg>
+          Analytics
+        </a>
+      </div>
+    </div>
+
+    <div class="stat-stage" aria-label="Mood summary">
+      @for (stat of stats; track stat.label) {
+        <article class="glass-card" [class]="'glass-card glass-card--' + stat.type">
+          <span>{{ stat.label }}</span>
+          <strong>{{ stat.value }}</strong>
+          <small>{{ stat.change }}</small>
+        </article>
+      }
+    </div>
+
+    <article class="panel chart-panel">
+      <div class="panel-heading">
+        <div>
+          <p>Trend</p>
+          <h2>Last 7 days</h2>
+        </div>
+        <svg lucideChartColumn size="18"></svg>
+      </div>
+      <div class="chart-bars">
+        @for (day of days; track day; let i = $index) {
+          <div class="bar-wrap">
+            <span class="bar" [style.height.%]="[42, 66, 54, 88, 76, 94, 63][i]"></span>
+            <small>{{ day }}</small>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="panel note-panel">
+      <div class="panel-heading">
+        <div>
+          <p>Today</p>
+          <h2>Quick note</h2>
+        </div>
+        <svg lucideCalendarDays size="18"></svg>
+      </div>
+      <div class="composer">
+        <span>What changed your mood today?</span>
+        <button type="button" routerLink="/chat" aria-label="Open chat">
+          <svg lucideSend size="16"></svg>
+        </button>
+      </div>
+    </article>
+  </section>
+</div>
