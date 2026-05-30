@@ -3,5 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "bash scripts/dev.sh"
+  },
+  "devDependencies": {
+    "shadcn": "^4.8.3"
   }
 }
