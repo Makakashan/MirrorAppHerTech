@@ -1,15 +1,30 @@
-<div class="layout">
-
+<div class="layout" [class.layout--sidebar-collapsed]="sidebarCollapsed">
   <!-- Sidebar -->
-  <aside class="sidebar">
-
+  <aside
+    class="sidebar"
+    [class.sidebar--collapsed]="sidebarCollapsed"
+    [style.width.px]="sidebarCollapsed ? 0 : sidebarWidth"
+  >
     <div class="logo">
       <div class="logo-icon">M</div>
       <span class="logo-text">Mirror</span>
+      <button
+        class="sidebar-control"
+        type="button"
+        (click)="toggleSidebar()"
+        aria-label="Hide sidebar"
+      >
+        <svg lucidePanelLeftClose size="17"></svg>
+      </button>
     </div>
 
     <nav class="nav">
-      <a class="nav-item" routerLink="/" routerLinkActive="nav-item--active" [routerLinkActiveOptions]="{exact:true}">
+      <a
+        class="nav-item"
+        routerLink="/"
+        routerLinkActive="nav-item--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
         <svg lucideHouse size="18"></svg>
         <span>Home</span>
       </a>
@@ -39,14 +54,23 @@
         <p class="user-email">user&#64;example.com</p>
       </div>
     </div>
-
   </aside>
+
+  @if (sidebarCollapsed) {
+    <button
+      class="sidebar-restore"
+      type="button"
+      (click)="toggleSidebar()"
+      aria-label="Show sidebar"
+    >
+      <svg lucidePanelLeftOpen size="18"></svg>
+    </button>
+  }
 
   <!-- Main -->
   <div class="main">
     <main class="content">
       <router-outlet />
     </main>
-
   </div>
 </div>
