@@ -1,10 +1,14 @@
 package server
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -15,6 +19,7 @@ type App struct {
 	mu       sync.Mutex
 	messages []Message
 	metrics  Metrics
+	ai       *NvidiaClient
 }
 
 func New() *App {
@@ -22,6 +27,7 @@ func New() *App {
 	return &App{
 		messages: initialMessages(now),
 		metrics:  initialMetrics(now),
+		ai:       NewNvidiaClientFromEnv(),
 	}
 }
 
@@ -92,7 +98,7 @@ func (a *App) handleChat(w http.ResponseWriter, r *http.Request) {
 	aiMessage := Message{
 		ID:   fmt.Sprintf("%d-ai", now.UnixNano()),
 		Role: "ai",
-		Text: buildReflection(text),
+		Text: a.generateReflection(r.Context(), text),
 		Time: formatClock(now),
 	}
 
@@ -103,6 +109,19 @@ func (a *App) handleChat(w http.ResponseWriter, r *http.Request) {
 	a.mu.Unlock()
 
 	writeJSON(w, http.StatusOK, chatResponse{Message: aiMessage, Metrics: metrics})
+}
+
+func (a *App) generateReflection(ctx context.Context, text string) string {
+	if a.ai == nil {
+		return buildReflection(text)
+	}
+
+	response, err := a.ai.Complete(ctx, text)
+	if err != nil || strings.TrimSpace(response) == "" {
+		return buildReflection(text)
+	}
+
+	return response
 }
 
 func (a *App) handleSuggestions(w http.ResponseWriter, _ *http.Request) {
@@ -276,4 +295,111 @@ func writeJSON(w http.ResponseWriter, status int, value any) {
 
 func writeError(w http.ResponseWriter, status int, message string) {
 	writeJSON(w, status, map[string]string{"error": message})
+}
+
+type NvidiaClient struct {
+	apiKey     string
+	endpoint   string
+	model      string
+	httpClient *http.Client
+}
+
+type nvidiaChatRequest struct {
+	Model       string          `json:"model"`
+	Messages    []nvidiaMessage `json:"messages"`
+	MaxTokens   int             `json:"max_tokens"`
+	Temperature float64         `json:"temperature"`
+	TopP        float64         `json:"top_p"`
+	Stream      bool            `json:"stream"`
+}
+
+type nvidiaMessage struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+type nvidiaChatResponse struct {
+	Choices []struct {
+		Message nvidiaMessage `json:"message"`
+	} `json:"choices"`
+}
+
+func NewNvidiaClientFromEnv() *NvidiaClient {
+	apiKey := os.Getenv("NVIDIA_API_KEY")
+	if apiKey == "" {
+		return nil
+	}
+
+	endpoint := os.Getenv("NVIDIA_INVOKE_URL")
+	if endpoint == "" {
+		endpoint = "https://integrate.api.nvidia.com/v1/chat/completions"
+	}
+
+	model := os.Getenv("NVIDIA_MODEL")
+	if model == "" {
+		model = "stepfun-ai/step-3.7-flash"
+	}
+
+	return &NvidiaClient{
+		apiKey:   apiKey,
+		endpoint: endpoint,
+		model:    model,
+		httpClient: &http.Client{
+			Timeout: 60 * time.Second,
+		},
+	}
+}
+
+func (c *NvidiaClient) Complete(ctx context.Context, input string) (string, error) {
+	payload := nvidiaChatRequest{
+		Model: c.model,
+		Messages: []nvidiaMessage{
+			{
+				Role:    "system",
+				Content: "You are Mirror, a concise reflection assistant. Help users notice emotions, context, body signals, patterns, and next reflective questions. Do not diagnose, label the user, or present yourself as a therapist. Keep replies supportive, practical, and under 120 words.",
+			},
+			{
+				Role:    "user",
+				Content: input,
+			},
+		},
+		MaxTokens:   512,
+		Temperature: 0.7,
+		TopP:        0.95,
+		Stream:      false,
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.endpoint, bytes.NewReader(body))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Authorization", "Bearer "+c.apiKey)
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := c.httpClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		responseBody, _ := io.ReadAll(io.LimitReader(res.Body, 2048))
+		return "", fmt.Errorf("nvidia api status %d: %s", res.StatusCode, strings.TrimSpace(string(responseBody)))
+	}
+
+	var parsed nvidiaChatResponse
+	if err := json.NewDecoder(res.Body).Decode(&parsed); err != nil {
+		return "", err
+	}
+	if len(parsed.Choices) == 0 {
+		return "", errors.New("nvidia api returned no choices")
+	}
+
+	return strings.TrimSpace(parsed.Choices[0].Message.Content), nil
 }
