@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { RouterOutlet, RouterLink, RouterLinkActive } from "@angular/router";
+import { Router, RouterOutlet, RouterLink, RouterLinkActive } from "@angular/router";
 import {
 	LucideCalendarDays,
 	LucideChartColumn,
@@ -9,6 +9,8 @@ import {
 	LucideUser,
 } from "@lucide/angular";
 import { ThemeService } from "../../../services/theme.service";
+import { ChatService } from "../../../services/chat.service";
+import { ChatSession } from "../../../models/message.model";
 
 @Component({
 	selector: "app-dashboard-layout",
@@ -30,11 +32,29 @@ import { ThemeService } from "../../../services/theme.service";
 export class DashboardLayoutComponent {
 	sidebarWidth = 240;
 	sidebarCollapsed = true;
-	readonly recentChats = ['Morning anxiety check-in', 'Work boundary reflection', 'Evening gratitude note'];
 
-	constructor(readonly themeService: ThemeService) {}
+	constructor(
+		readonly themeService: ThemeService,
+		readonly chatService: ChatService,
+		private router: Router,
+	) {}
 
 	toggleSidebar(): void {
 		this.sidebarCollapsed = !this.sidebarCollapsed;
+	}
+
+	openNewChat(): void {
+		this.chatService.startNewChat();
+		this.router.navigate(['/chat']);
+	}
+
+	openSession(session: ChatSession): void {
+		this.chatService.loadSession(session);
+		this.router.navigate(['/chat']);
+	}
+
+	formatDate(iso: string): string {
+		const d = new Date(iso);
+		return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
 	}
 }

@@ -33,7 +33,7 @@
   --sidebar-restore-bg: rgba(7, 16, 22, 0.78);
   --sidebar-restore-hover: rgba(45, 212, 191, 0.16);
   --sidebar-restore-shadow: 0 18px 44px rgba(0, 0, 0, 0.26);
-  --logo-tile-bg: rgba(15, 23, 42, 0.86);
+  --logo-tile-bg: #ffffff;
   --logo-tile-border: rgba(45, 212, 191, 0.18);
   --logo-tile-shine: rgba(255, 255, 255, 0.08);
   --logo-tile-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
@@ -217,16 +217,34 @@
     padding: 0 10px;
     font-size: 12px;
     text-decoration: none;
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
 
     &:hover {
       background: var(--surface-hover);
     }
   }
 
-  span {
+  .recent-title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .recent-date {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: var(--soft-muted);
+  }
+
+  .no-history {
+    font-size: 12px;
+    color: var(--soft-muted);
+    padding: 2px 2px;
+  }
+
+  a > span:first-child {
     width: 12px;
     height: 12px;
     border: 1px solid currentColor;

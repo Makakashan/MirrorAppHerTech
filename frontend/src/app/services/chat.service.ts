@@ -1,8 +1,18 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Message } from '../models/message.model';
+import { Message, ChatSession } from '../models/message.model';
 import { Metrics } from '../models/metrics.model';
 import { MetricsService } from './metrics.service';
+
+const STORAGE_CURRENT = 'mirror:current';
+const STORAGE_HISTORY = 'mirror:history';
+
+const WELCOME: Message = {
+  id: '0',
+  role: 'ai',
+  text: "Hi! I'm Mirror. Tell me what has been on your mind, and I will help you reflect on the patterns behind it.",
+  time: '',
+};
 
 const AI_RESPONSES: { keywords: string[]; text: string }[] = [
   {
@@ -30,36 +40,21 @@ const DEFAULT_RESPONSE =
 export class ChatService {
   private readonly apiBase = '/api';
 
-  readonly messages = signal<Message[]>([
-    {
-      id: '0',
-      role: 'ai',
-      text: "Hi! I'm Mirror. Tell me what has been on your mind, and I will help you reflect on the patterns behind it.",
-      time: this.getTime(),
-    },
-  ]);
-
+  readonly messages = signal<Message[]>(this.loadCurrent());
   readonly isTyping = signal(false);
+  readonly history = signal<ChatSession[]>(this.loadHistory());
 
   constructor(
     private http: HttpClient,
     private metricsService: MetricsService,
-  ) {
-    this.http.get<Message[]>(`${this.apiBase}/messages`).subscribe({
-      next: messages => {
-        if (messages.length) {
-          this.messages.set(messages);
-        }
-      },
-      error: () => undefined,
-    });
-  }
+  ) {}
 
   sendUserMessage(text: string): void {
     this.messages.update(msgs => [
       ...msgs,
       { id: Date.now().toString(), role: 'user', text, time: this.getTime() },
     ]);
+    this.persistCurrent();
     this.isTyping.set(true);
 
     this.http.post<{ message: Message; metrics: Metrics }>(`${this.apiBase}/chat`, { message: text }).subscribe({
@@ -76,6 +71,60 @@ export class ChatService {
     });
   }
 
+  startNewChat(): void {
+    const msgs = this.messages().filter(m => m.id !== '0');
+    const userMsgs = msgs.filter(m => m.role === 'user');
+
+    if (userMsgs.length > 0) {
+      const session: ChatSession = {
+        id: Date.now().toString(),
+        title: userMsgs[0].text.slice(0, 48),
+        startedAt: new Date().toISOString(),
+        messages: msgs,
+      };
+      const updated = [session, ...this.loadHistory()].slice(0, 30);
+      localStorage.setItem(STORAGE_HISTORY, JSON.stringify(updated));
+      this.history.set(updated);
+    }
+
+    const welcome = { ...WELCOME, time: this.getTime() };
+    this.messages.set([welcome]);
+    localStorage.removeItem(STORAGE_CURRENT);
+  }
+
+  loadSession(session: ChatSession): void {
+    this.messages.set([{ ...WELCOME, time: '' }, ...session.messages]);
+    this.persistCurrent();
+  }
+
+  private addAiMessage(message: Message): void {
+    this.isTyping.set(false);
+    this.messages.update(msgs => [...msgs, message]);
+    this.persistCurrent();
+  }
+
+  private persistCurrent(): void {
+    localStorage.setItem(STORAGE_CURRENT, JSON.stringify(this.messages()));
+  }
+
+  private loadCurrent(): Message[] {
+    try {
+      const raw = localStorage.getItem(STORAGE_CURRENT);
+      const msgs: Message[] = raw ? JSON.parse(raw) : [];
+      return msgs.length ? msgs : [{ ...WELCOME, time: '' }];
+    } catch {
+      return [{ ...WELCOME, time: '' }];
+    }
+  }
+
+  private loadHistory(): ChatSession[] {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_HISTORY) ?? '[]');
+    } catch {
+      return [];
+    }
+  }
+
   private getTime(): string {
     return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
@@ -84,10 +133,5 @@ export class ChatService {
     const q = query.toLowerCase();
     const match = AI_RESPONSES.find(r => r.keywords.some(k => q.includes(k)));
     return match ? match.text : DEFAULT_RESPONSE;
-  }
-
-  private addAiMessage(message: Message): void {
-    this.isTyping.set(false);
-    this.messages.update(msgs => [...msgs, message]);
   }
 }

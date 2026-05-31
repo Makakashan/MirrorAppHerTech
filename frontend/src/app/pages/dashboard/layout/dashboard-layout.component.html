@@ -33,9 +33,9 @@
         <span>Analytics</span>
       </a>
 
-      <a class="nav-item" routerLink="/chat" routerLinkActive="nav-item--active">
+      <a class="nav-item" routerLink="/chat" routerLinkActive="nav-item--active" (click)="openNewChat()">
         <svg lucideMessageCircle size="18"></svg>
-        <span>Chat</span>
+        <span>Chats</span>
       </a>
 
       <a class="nav-item" routerLink="/calendar" routerLinkActive="nav-item--active">
@@ -51,11 +51,15 @@
 
     <section class="sidebar-recent" aria-label="Recent chats">
       <p>Recent chats</p>
-      @for (chat of recentChats; track chat) {
-        <a routerLink="/chat">
+      @for (session of chatService.history(); track session.id) {
+        <a (click)="openSession(session)" style="cursor:pointer">
           <span></span>
-          {{ chat }}
+          <span class="recent-title">{{ session.title }}</span>
+          <span class="recent-date">{{ formatDate(session.startedAt) }}</span>
         </a>
+      }
+      @if (chatService.history().length === 0) {
+        <span class="no-history">No chats saved yet</span>
       }
     </section>
 

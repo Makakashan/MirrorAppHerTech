@@ -64,13 +64,16 @@
 
 .welcome {
   min-height: 100%;
-  display: grid;
-  place-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 34px;
-  padding-bottom: 88px;
+  padding: 28px;
 }
 
 .welcome-copy {
+  width: min(660px, 100%);
   text-align: left;
 
   h1,
@@ -91,10 +94,10 @@
 }
 
 .prompt-grid {
+  width: min(660px, 100%);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
-  width: min(660px, 100%);
 }
 
 .prompt-card {
@@ -219,6 +222,10 @@
 .chat-footer {
   padding: 10px clamp(18px, 4vw, 36px) 18px;
   flex-shrink: 0;
+
+  &--hidden {
+    display: none;
+  }
 }
 
 .input-wrap {
@@ -291,8 +298,8 @@
   }
 
   .welcome {
-    place-content: start;
     padding: 48px 0 64px;
+    justify-content: flex-start;
   }
 
   .prompt-grid {

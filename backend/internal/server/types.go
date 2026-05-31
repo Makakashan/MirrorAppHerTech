@@ -39,6 +39,28 @@ type chatRequest struct {
 }
 
 type chatResponse struct {
-	Message Message `json:"message"`
-	Metrics Metrics `json:"metrics"`
+	Message  Message         `json:"message"`
+	Metrics  Metrics         `json:"metrics"`
+	Analysis *AnalysisResult `json:"analysis,omitempty"`
+}
+
+type ScoresDelta struct {
+	Anxiety      *float64 `json:"anxiety"`
+	Energy       *float64 `json:"energy"`
+	Mood         *float64 `json:"mood"`
+	Openness     *float64 `json:"openness"`
+	Focus        *float64 `json:"focus"`
+	Irritability *float64 `json:"irritability"`
+}
+
+type AnalysisExcerpt struct {
+	Quote      *string `json:"quote"`
+	ContextTag *string `json:"context_tag"`
+}
+
+type AnalysisResult struct {
+	ScoresDelta   ScoresDelta     `json:"scores_delta"`
+	Excerpt       AnalysisExcerpt `json:"excerpt"`
+	Triggers      []string        `json:"triggers"`
+	SignalStrength string          `json:"signal_strength"`
 }

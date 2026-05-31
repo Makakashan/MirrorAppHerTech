@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -16,19 +17,70 @@ import (
 )
 
 type App struct {
-	mu       sync.Mutex
-	messages []Message
-	metrics  Metrics
-	ai       *NvidiaClient
+	mu              sync.Mutex
+	messages        []Message
+	aiHistory       []nvidiaMessage
+	metrics         Metrics
+	ai              *NvidiaClient
+	systemPrompt    string
+	scores          map[string]float64
+	sessionExcerpts []AnalysisExcerpt
+	sessionTriggers map[string]int // trigger → occurrence count
 }
 
 func New() *App {
 	now := time.Now()
+	systemPrompt, scores := loadProfileAndBuildPrompt()
 	return &App{
-		messages: initialMessages(now),
-		metrics:  initialMetrics(now),
-		ai:       NewNvidiaClientFromEnv(),
+		messages:        initialMessages(now),
+		aiHistory:       []nvidiaMessage{},
+		metrics:         initialMetrics(now),
+		ai:              NewNvidiaClientFromEnv(),
+		systemPrompt:    systemPrompt,
+		scores:          scores,
+		sessionExcerpts: []AnalysisExcerpt{},
+		sessionTriggers: map[string]int{},
 	}
+}
+
+// sessionContext builds an addendum to the system prompt with what the AI
+// has learned during this session — excerpts, recurring triggers, live scores.
+// Called under mu lock.
+func (a *App) sessionContext() string {
+	if len(a.sessionExcerpts) == 0 && len(a.sessionTriggers) == 0 {
+		return ""
+	}
+	var sb strings.Builder
+	sb.WriteString("\n\n## Learned during this session (do not quote directly)\n")
+
+	if len(a.sessionExcerpts) > 0 {
+		sb.WriteString("\nNew excerpts:\n")
+		for _, e := range a.sessionExcerpts {
+			if e.Quote != nil && e.ContextTag != nil {
+				fmt.Fprintf(&sb, "- \"%s\" [%s]\n", *e.Quote, *e.ContextTag)
+			}
+		}
+	}
+
+	if len(a.sessionTriggers) > 0 {
+		sb.WriteString("\nRecurring triggers this session: ")
+		first := true
+		for t, count := range a.sessionTriggers {
+			if !first {
+				sb.WriteString(", ")
+			}
+			fmt.Fprintf(&sb, "%s×%d", t, count)
+			first = false
+		}
+		sb.WriteString("\n")
+	}
+
+	sb.WriteString("\nLive scores (updated from conversation):\n")
+	for _, k := range []string{"anxiety", "energy", "mood", "openness", "focus", "irritability"} {
+		fmt.Fprintf(&sb, "- %s: %.1f\n", k, a.scores[k])
+	}
+
+	return sb.String()
 }
 
 func (a *App) Routes() http.Handler {
@@ -38,7 +90,26 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("POST /api/chat", a.handleChat)
 	mux.HandleFunc("GET /api/suggestions", a.handleSuggestions)
 	mux.HandleFunc("GET /api/metrics", a.handleMetrics)
-	return cors(mux)
+	return requestLogger(cors(mux))
+}
+
+type statusWriter struct {
+	http.ResponseWriter
+	status int
+}
+
+func (sw *statusWriter) WriteHeader(code int) {
+	sw.status = code
+	sw.ResponseWriter.WriteHeader(code)
+}
+
+func requestLogger(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		sw := &statusWriter{ResponseWriter: w, status: http.StatusOK}
+		next.ServeHTTP(sw, r)
+		log.Printf("%s %s %d %s", r.Method, r.URL.Path, sw.status, time.Since(start).Round(time.Millisecond))
+	})
 }
 
 func (a *App) WithStatic(api http.Handler, dist string) http.Handler {
@@ -88,6 +159,61 @@ func (a *App) handleChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	a.mu.Lock()
+	a.aiHistory = append(a.aiHistory, nvidiaMessage{Role: "user", Content: text})
+	history := trimHistory(a.aiHistory, 10) // keep last 10 messages (5 turns)
+	systemPrompt := a.systemPrompt + a.sessionContext()
+	a.mu.Unlock()
+
+	// Call 1 (dialogue) + Call 2 (analyzer) in parallel
+	var (
+		aiText   string
+		analysis *AnalysisResult
+		wg       sync.WaitGroup
+	)
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		if a.ai != nil {
+			t := time.Now()
+			var err error
+			aiText, err = a.ai.Chat(r.Context(), systemPrompt, history)
+			if err != nil {
+				log.Printf("call1 error (%s): %v — retrying", time.Since(t).Round(time.Millisecond), err)
+				aiText, err = a.ai.Chat(r.Context(), systemPrompt, history)
+			}
+			if err != nil || strings.TrimSpace(aiText) == "" {
+				log.Printf("call1 fallback (%s)", time.Since(t).Round(time.Millisecond))
+				aiText = buildReflection(text)
+			} else {
+				log.Printf("call1 ok (%s)", time.Since(t).Round(time.Millisecond))
+			}
+		} else {
+			aiText = buildReflection(text)
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		if a.ai != nil {
+			t := time.Now()
+			var err error
+			analysis, err = a.ai.Analyze(context.Background(), text)
+			if err != nil {
+				log.Printf("call2 error (%s): %v — retrying", time.Since(t).Round(time.Millisecond), err)
+				analysis, err = a.ai.Analyze(context.Background(), text)
+			}
+			if err != nil {
+				log.Printf("call2 failed (%s): %v", time.Since(t).Round(time.Millisecond), err)
+			} else {
+				log.Printf("call2 ok signal=%s (%s)", analysis.SignalStrength, time.Since(t).Round(time.Millisecond))
+			}
+		}
+	}()
+
+	wg.Wait()
+
 	now := time.Now()
 	userMessage := Message{
 		ID:   fmt.Sprintf("%d-user", now.UnixNano()),
@@ -98,30 +224,80 @@ func (a *App) handleChat(w http.ResponseWriter, r *http.Request) {
 	aiMessage := Message{
 		ID:   fmt.Sprintf("%d-ai", now.UnixNano()),
 		Role: "ai",
-		Text: a.generateReflection(r.Context(), text),
+		Text: aiText,
 		Time: formatClock(now),
 	}
 
 	a.mu.Lock()
+	a.aiHistory = append(a.aiHistory, nvidiaMessage{Role: "assistant", Content: aiText})
+	if analysis != nil && analysis.SignalStrength != "weak" {
+		a.applyScoresDelta(analysis)
+		a.saveSessionData(analysis)
+	}
 	a.messages = append(a.messages, userMessage, aiMessage)
 	a.metrics = buildMetrics(now, collectUserTexts(a.messages))
 	metrics := a.metrics
 	a.mu.Unlock()
 
-	writeJSON(w, http.StatusOK, chatResponse{Message: aiMessage, Metrics: metrics})
+	writeJSON(w, http.StatusOK, chatResponse{Message: aiMessage, Metrics: metrics, Analysis: analysis})
 }
 
-func (a *App) generateReflection(ctx context.Context, text string) string {
-	if a.ai == nil {
-		return buildReflection(text)
+func trimHistory(history []nvidiaMessage, maxMessages int) []nvidiaMessage {
+	if len(history) <= maxMessages {
+		cp := make([]nvidiaMessage, len(history))
+		copy(cp, history)
+		return cp
+	}
+	cp := make([]nvidiaMessage, maxMessages)
+	copy(cp, history[len(history)-maxMessages:])
+	return cp
+}
+
+func (a *App) saveSessionData(analysis *AnalysisResult) {
+	if analysis.Excerpt.Quote != nil && analysis.Excerpt.ContextTag != nil {
+		a.sessionExcerpts = append(a.sessionExcerpts, analysis.Excerpt)
+		log.Printf("session excerpt saved: [%s] %.60q", *analysis.Excerpt.ContextTag, *analysis.Excerpt.Quote)
+	}
+	for _, t := range analysis.Triggers {
+		if t != "" {
+			a.sessionTriggers[t]++
+		}
+	}
+}
+
+func (a *App) applyScoresDelta(analysis *AnalysisResult) {
+	const chatSourceWeight = 0.5
+	var signalMod float64
+	switch analysis.SignalStrength {
+	case "strong":
+		signalMod = 0.7
+	case "moderate":
+		signalMod = 0.3
+	default:
+		return
+	}
+	w := chatSourceWeight * signalMod
+
+	apply := func(key string, delta *float64) {
+		if delta == nil {
+			return
+		}
+		v := a.scores[key] + *delta*w
+		if v < 0 {
+			v = 0
+		} else if v > 10 {
+			v = 10
+		}
+		a.scores[key] = v
 	}
 
-	response, err := a.ai.Complete(ctx, text)
-	if err != nil || strings.TrimSpace(response) == "" {
-		return buildReflection(text)
-	}
-
-	return response
+	d := analysis.ScoresDelta
+	apply("anxiety", d.Anxiety)
+	apply("energy", d.Energy)
+	apply("mood", d.Mood)
+	apply("openness", d.Openness)
+	apply("focus", d.Focus)
+	apply("irritability", d.Irritability)
 }
 
 func (a *App) handleSuggestions(w http.ResponseWriter, _ *http.Request) {
@@ -320,22 +496,23 @@ type nvidiaMessage struct {
 
 type nvidiaChatResponse struct {
 	Choices []struct {
-		Message nvidiaMessage `json:"message"`
+		Message      nvidiaMessage `json:"message"`
+		FinishReason string        `json:"finish_reason"`
 	} `json:"choices"`
 }
 
 func NewNvidiaClientFromEnv() *NvidiaClient {
-	apiKey := os.Getenv("NVIDIA_API_KEY")
+	apiKey := os.Getenv("AI_API_KEY")
 	if apiKey == "" {
 		return nil
 	}
 
-	endpoint := os.Getenv("NVIDIA_INVOKE_URL")
+	endpoint := os.Getenv("AI_INVOKE_URL")
 	if endpoint == "" {
 		endpoint = "https://integrate.api.nvidia.com/v1/chat/completions"
 	}
 
-	model := os.Getenv("NVIDIA_MODEL")
+	model := os.Getenv("AI_MODEL")
 	if model == "" {
 		model = "stepfun-ai/step-3.7-flash"
 	}
@@ -350,25 +527,7 @@ func NewNvidiaClientFromEnv() *NvidiaClient {
 	}
 }
 
-func (c *NvidiaClient) Complete(ctx context.Context, input string) (string, error) {
-	payload := nvidiaChatRequest{
-		Model: c.model,
-		Messages: []nvidiaMessage{
-			{
-				Role:    "system",
-				Content: "You are Mirror, a concise reflection assistant. Help users notice emotions, context, body signals, patterns, and next reflective questions. Do not diagnose, label the user, or present yourself as a therapist. Keep replies supportive, practical, and under 120 words.",
-			},
-			{
-				Role:    "user",
-				Content: input,
-			},
-		},
-		MaxTokens:   512,
-		Temperature: 0.7,
-		TopP:        0.95,
-		Stream:      false,
-	}
-
+func (c *NvidiaClient) doRequest(ctx context.Context, payload nvidiaChatRequest) (string, error) {
 	body, err := json.Marshal(payload)
 	if err != nil {
 		return "", err
@@ -381,6 +540,8 @@ func (c *NvidiaClient) Complete(ctx context.Context, input string) (string, erro
 	req.Header.Set("Authorization", "Bearer "+c.apiKey)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("HTTP-Referer", "https://github.com/mental-mirror")
+	req.Header.Set("X-Title", "Mental Mirror")
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
@@ -401,5 +562,99 @@ func (c *NvidiaClient) Complete(ctx context.Context, input string) (string, erro
 		return "", errors.New("nvidia api returned no choices")
 	}
 
-	return strings.TrimSpace(parsed.Choices[0].Message.Content), nil
+	choice := parsed.Choices[0]
+	if choice.FinishReason != "" && choice.FinishReason != "stop" {
+		log.Printf("nvidia finish_reason=%q content_len=%d", choice.FinishReason, len(choice.Message.Content))
+	}
+	content := strings.TrimSpace(choice.Message.Content)
+	if content == "" {
+		return "", fmt.Errorf("nvidia api returned empty content (finish_reason=%q)", choice.FinishReason)
+	}
+	return content, nil
+}
+
+func (c *NvidiaClient) Chat(ctx context.Context, systemPrompt string, history []nvidiaMessage) (string, error) {
+	messages := make([]nvidiaMessage, 0, len(history)+1)
+	messages = append(messages, nvidiaMessage{Role: "system", Content: systemPrompt})
+	messages = append(messages, history...)
+
+	return c.doRequest(ctx, nvidiaChatRequest{
+		Model:       c.model,
+		Messages:    messages,
+		MaxTokens:   1024,
+		Temperature: 0.7,
+		TopP:        0.95,
+	})
+}
+
+const analyzerSystem = `You are a silent background analyzer for a mental health reflection app. You receive a single message from a user and return a structured JSON analysis. You are never shown to the user. Be precise and conservative — only flag what is clearly present in the text.`
+
+const analyzerUserTemplate = `Analyze the following user message and return ONLY a valid JSON object with no explanation, no markdown, no code blocks.
+
+User message:
+"__MSG__"
+
+Return this exact structure:
+{
+  "scores_delta": {
+    "anxiety":      <float -2.0 to 2.0 or null if not detectable>,
+    "energy":       <float -2.0 to 2.0 or null if not detectable>,
+    "mood":         <float -2.0 to 2.0 or null if not detectable>,
+    "openness":     <float -2.0 to 2.0 or null if not detectable>,
+    "focus":        <float -2.0 to 2.0 or null if not detectable>,
+    "irritability": <float -2.0 to 2.0 or null if not detectable>
+  },
+  "excerpt": {
+    "quote": <string: verbatim phrase from the message worth remembering, or null>,
+    "context_tag": <string: one snake_case tag describing the pattern, or null>
+  },
+  "triggers": [<string>, ...],
+  "signal_strength": <"strong" | "moderate" | "weak">
+}
+
+Rules:
+- scores_delta: positive = increase, negative = decrease. Use null when there is no clear signal.
+- excerpt.quote: only if emotionally significant or reveals a recurring pattern. Otherwise null.
+- triggers: short noun phrases, max 3, empty array if none.
+- signal_strength: "strong" if multiple clear signals, "moderate" if one clear signal, "weak" if short or neutral.`
+
+func (c *NvidiaClient) Analyze(ctx context.Context, userMessage string) (*AnalysisResult, error) {
+	userPrompt := strings.ReplaceAll(analyzerUserTemplate, "__MSG__", userMessage)
+
+	raw, err := c.doRequest(ctx, nvidiaChatRequest{
+		Model: c.model,
+		Messages: []nvidiaMessage{
+			{Role: "system", Content: analyzerSystem},
+			{Role: "user", Content: userPrompt},
+		},
+		MaxTokens:   600,
+		Temperature: 0.2,
+		TopP:        0.9,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	log.Printf("analyze raw (pre-strip, truncated 512): %.512s", raw)
+
+	// Strip markdown fences: ```json ... ``` or ``` ... ```
+	raw = strings.TrimSpace(raw)
+	if strings.HasPrefix(raw, "```") {
+		// remove first line (``` or ```json)
+		if i := strings.Index(raw, "\n"); i != -1 {
+			raw = raw[i+1:]
+		}
+		// remove trailing ```
+		if strings.HasSuffix(strings.TrimSpace(raw), "```") {
+			raw = raw[:strings.LastIndex(raw, "```")]
+		}
+		raw = strings.TrimSpace(raw)
+	}
+
+	var result AnalysisResult
+	if err := json.Unmarshal([]byte(raw), &result); err != nil {
+		log.Printf("analyze post-strip parse error, raw: %.512s", raw)
+		return nil, fmt.Errorf("parse analysis JSON: %w", err)
+	}
+	return &result, nil
 }

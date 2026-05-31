@@ -2,10 +2,10 @@
   <div class="chat-shell">
     <section class="chat-workspace">
       <div class="messages" #messagesEl>
-        @if (visibleMessages().length === 0 && !isTyping()) {
+        @if (welcomeMode()) {
           <section class="welcome">
             <div class="welcome-copy">
-              <h1>Hello User</h1>
+              <h1>Hello</h1>
               <p>How can I help you reflect today?</p>
             </div>
             <div class="prompt-grid">

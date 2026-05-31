@@ -22,6 +22,7 @@ export class ChatComponent {
   messages = this.chatService.messages;
   visibleMessages = computed(() => this.messages().filter(message => message.id !== '0'));
   isTyping = this.chatService.isTyping;
+  welcomeMode = computed(() => this.visibleMessages().length === 0 && !this.isTyping());
   inputText = '';
   focused = false;
   readonly promptCards = [
