@@ -2,26 +2,26 @@
 
 ## Grupa docelowa
 
-**Młodzi ludzie zainteresowani psychologią, którzy chcą lepiej poznać siebie i zrozumieć swoje emocje, zachowania oraz mechanizmy działania.**
+**Osoby przechodzące terapię oraz zainteresowane swoim stanem emocjonalnym, które chcą lepiej rozumieć swoje reakcje, nastroje i wewnętrzne mechanizmy w codziennym życiu.**
 
 ## Problem grupy docelowej
 
-Wiele osób chce lepiej zrozumieć siebie, ale jednocześnie:
+Współczesna psychologia w dużej mierze opiera się na subiektywnych odpowiedziach pacjentów, które mogą być niepełne, zniekształcone albo celowo ukrywane. Dodatkowym wyzwaniem są długie przerwy między sesjami terapeutycznymi, podczas których dzieje się wiele istotnych zdarzeń wymagających natychmiastowej reakcji, wsparcia i interpretacji.
 
-- boi się pójść do psychologa,
-- nie ma na to wystarczających środków finansowych,
-- nie wie, od czego zacząć,
-- albo nie czuje się gotowa na tradycyjną formę wsparcia.
-
-Dodatkowo, część użytkowników jest po prostu ciekawa własnych procesów psychologicznych i chce obserwować, jak zmieniają się w czasie.
+W efekcie zarówno pacjent, jak i terapeuta mogą nie mieć pełnego obrazu tego, co naprawdę dzieje się w psychice i emocjach między spotkaniami.
 
 ## Proponowane rozwiązanie
 
-Proponujemy aplikację, która nie stawia diagnoz, lecz działa jak cyfrowe „lustro” osobowości użytkownika. Na podstawie danych zbieranych w określonym czasie aplikacja może:
+Proponujemy system, który pozwala użytkownikowi pozostawać w stałym kontakcie z aplikacją i na bieżąco gromadzić dane o jego emocjach, zachowaniach i stanie psychicznym. System analizuje te informacje w czasie i pomaga wychwytywać ukryte zależności, powtarzające się wzorce oraz subtelne podteksty psychiczne, które mogą umknąć w zwykłej rozmowie.
 
-- analizować zachowania i zmiany w czasie,
-- przedstawiać różne metryki dotyczące użytkownika,
-- wskazywać możliwe przyczyny określonych zachowań lub nastrojów,
-- w niektórych przypadkach sugerować artykuły, testy lub specjalistów związanych z konkretnym problemem.
+Nasze rozwiązanie działa jak dynamiczne cyfrowe lustro: nie tylko zbiera dane, ale też stale je aktualizuje i interpretuje, aby lepiej odzwierciedlać zmieniający się stan użytkownika.
 
-Naszym celem jest stworzenie narzędzia, które pomaga w autorefleksji i lepszym zrozumieniu siebie, bez zastępowania psychologa.
+## Alternatywy
+
+Za alternatywę można uznać zwykłe chatboty oparte na AI. Różnią się one jednak od naszego podejścia tym, że zazwyczaj reagują tylko na pojedyncze wiadomości, a nie prowadzą ciągłego, długoterminowego zbierania danych. Nasza systemowość polega właśnie na stałym monitorowaniu, dynamicznej aktualizacji profilu użytkownika i budowaniu bardziej kompletnego obrazu w czasie.
+
+## Źródła
+
+- Zhang et al., 2024 — _Sentiment Analysis in the Era of Large Language Models: A Reality Check_
+- Lecourt et al., 2025 — _“Only ChatGPT gets me”: An Empirical Analysis of GPT versus other Large Language Models for Emotion Detection in Text_
+- Liu et al., 2024 — _EmoLLMs: A Series of Emotional Large Language Models and Annotation Tools for Comprehensive Affective Analysis_
