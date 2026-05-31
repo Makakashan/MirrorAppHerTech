@@ -4,8 +4,7 @@ import {
 	LucideCalendarDays,
 	LucideChartColumn,
 	LucideHouse,
-	LucidePanelLeftClose,
-	LucidePanelLeftOpen,
+	LucideMessageCircle,
 	LucideSettings,
 	LucideUser,
 } from "@lucide/angular";
@@ -23,8 +22,7 @@ import { ThemeService } from "../../../services/theme.service";
 		LucideCalendarDays,
 		LucideChartColumn,
 		LucideHouse,
-		LucidePanelLeftClose,
-		LucidePanelLeftOpen,
+		LucideMessageCircle,
 		LucideSettings,
 		LucideUser,
 	],
@@ -32,6 +30,7 @@ import { ThemeService } from "../../../services/theme.service";
 export class DashboardLayoutComponent {
 	sidebarWidth = 240;
 	sidebarCollapsed = true;
+	readonly recentChats = ['Morning anxiety check-in', 'Work boundary reflection', 'Evening gratitude note'];
 
 	constructor(readonly themeService: ThemeService) {}
 

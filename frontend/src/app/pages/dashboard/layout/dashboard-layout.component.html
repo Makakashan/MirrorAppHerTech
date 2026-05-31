@@ -6,16 +6,15 @@
     [style.width.px]="sidebarCollapsed ? 0 : sidebarWidth"
   >
     <div class="logo">
-      <div class="logo-icon">M</div>
-      <span class="logo-text">Mirror</span>
       <button
-        class="sidebar-control"
+        class="logo-button"
         type="button"
         (click)="toggleSidebar()"
         aria-label="Hide sidebar"
       >
-        <svg lucidePanelLeftClose size="17"></svg>
+        <img src="logo.svg" alt="Mirror" class="sidebar-toggle-logo" />
       </button>
+      <span class="logo-text">Mirror</span>
     </div>
 
     <nav class="nav">
@@ -34,6 +33,11 @@
         <span>Analytics</span>
       </a>
 
+      <a class="nav-item" routerLink="/chat" routerLinkActive="nav-item--active">
+        <svg lucideMessageCircle size="18"></svg>
+        <span>Chat</span>
+      </a>
+
       <a class="nav-item" routerLink="/calendar" routerLinkActive="nav-item--active">
         <svg lucideCalendarDays size="18"></svg>
         <span>Calendar</span>
@@ -44,6 +48,16 @@
         <span>Settings</span>
       </a>
     </nav>
+
+    <section class="sidebar-recent" aria-label="Recent chats">
+      <p>Recent chats</p>
+      @for (chat of recentChats; track chat) {
+        <a routerLink="/chat">
+          <span></span>
+          {{ chat }}
+        </a>
+      }
+    </section>
 
     <div class="sidebar-user">
       <div class="user-avatar">
@@ -63,7 +77,7 @@
       (click)="toggleSidebar()"
       aria-label="Show sidebar"
     >
-      <svg lucidePanelLeftOpen size="18"></svg>
+      <img src="logo.svg" alt="" class="sidebar-toggle-logo" />
     </button>
   }
 

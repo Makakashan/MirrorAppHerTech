@@ -1,112 +1,74 @@
 <div class="analytics-page">
   <div class="analytics-inner">
-    <header class="page-header">
-      <div>
-        <p class="eyebrow">Analytics</p>
-        <h1>Reflection signals</h1>
-      </div>
-      <div class="header-actions">
-        <div class="segmented" aria-label="Analytics period">
-          <button type="button" [class.active]="period === '7d'" (click)="setPeriod('7d')">7 days</button>
-          <button type="button" [class.active]="period === '30d'" (click)="setPeriod('30d')">30 days</button>
-        </div>
-        <button class="outline-btn" type="button">
-          <svg lucideDownload size="16"></svg>
-          Download
-        </button>
-      </div>
-    </header>
+    <section class="dashboard-grid">
+      <main class="main-column">
+        <section class="kpi-grid" aria-label="Key metrics">
+          <article class="kpi-card kpi-card--accent">
+            <span>Average mood</span>
+            <small>↗ {{ deltaLabel }}</small>
+            <strong>{{ averageScore }}</strong>
+            <p>{{ streakDays }} day reflection streak</p>
+          </article>
+          <article class="kpi-card">
+            <span>Total reflections</span>
+            <small>↗ 12%</small>
+            <strong>128</strong>
+            <p>18 entries this week</p>
+          </article>
+          <article class="kpi-card">
+            <span>Mood stability</span>
+            <small>↗ 6%</small>
+            <strong>{{ stability }}%</strong>
+            <p>Based on day-to-day variance</p>
+          </article>
+        </section>
 
-    <section class="kpi-grid" aria-label="Key metrics">
-      <article class="kpi-card">
-        <span>Average mood</span>
-        <strong>{{ averageScore }}</strong>
-        <small>{{ deltaLabel }} from baseline</small>
-      </article>
-      <article class="kpi-card">
-        <span>Current streak</span>
-        <strong>{{ streakDays }}</strong>
-        <small>days with entries</small>
-      </article>
-      <article class="kpi-card">
-        <span>Stability</span>
-        <strong>{{ stability }}%</strong>
-        <small>based on day-to-day variance</small>
-      </article>
-      <article class="kpi-card">
-        <span>Peak day</span>
-        <strong>{{ bestDay.label }}</strong>
-        <small>{{ bestDay.value }} mood score</small>
-      </article>
-    </section>
-
-    <section class="analysis-grid">
-      <article class="panel panel--wide">
-        <div class="panel-heading">
-          <div>
-            <p class="panel-kicker">Trend</p>
-            <h2>Daily mood score</h2>
-          </div>
-          <span>{{ lowDay.label }} low · {{ bestDay.label }} high</span>
-        </div>
-        <app-mood-line-chart [data]="chartData" />
-      </article>
-
-      <article class="panel">
-        <div class="panel-heading">
-          <div>
-            <p class="panel-kicker">Sources</p>
-            <h2>Input mix</h2>
-          </div>
-        </div>
-        <div class="source-list">
-          @for (source of sources; track source.label) {
-            <div class="source-row">
-              <span>{{ source.label }}</span>
-              <strong>{{ source.value }}</strong>
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <h2>Mood trend</h2>
+            <div class="segmented">
+              <button type="button" [class.active]="period === '7d'" (click)="setPeriod('7d')">7 days</button>
+              <button type="button" [class.active]="period === '30d'" (click)="setPeriod('30d')">30 days</button>
+              <button type="button" [class.active]="period === 'monthly'" (click)="setPeriod('monthly')">Monthly</button>
             </div>
-          }
-        </div>
-      </article>
-
-      <article class="panel">
-        <div class="panel-heading">
-          <div>
-            <p class="panel-kicker">Notes</p>
-            <h2>Signals to watch</h2>
           </div>
-        </div>
-        <div class="insight-list">
-          @for (insight of insights; track insight) {
-            <p>{{ insight }}</p>
-          }
-        </div>
-      </article>
-    </section>
-
-    <section class="panel table-panel">
-      <div class="panel-heading">
-        <div>
-          <p class="panel-kicker">Breakdown</p>
-          <h2>Recent movement</h2>
-        </div>
-      </div>
-      <div class="trend-table">
-        <div class="trend-row trend-row--head">
-          <span>Day</span>
-          <span>Score</span>
-          <span>Change</span>
-        </div>
-        @for (row of trendRows; track row.label) {
-          <div class="trend-row">
-            <span>{{ row.label }}</span>
-            <strong>{{ row.value }}</strong>
-            <span [class.positive]="row.change > 0" [class.negative]="row.change < 0">
-              {{ row.change > 0 ? '+' : '' }}{{ row.change }}
-            </span>
+          <div class="legend">
+            <span><i></i> Mood score</span>
+            <span><i></i> Entry volume</span>
           </div>
-        }
-      </div>
+          <app-mood-line-chart [data]="chartData" />
+        </article>
+
+      </main>
+
+      <aside class="side-column">
+        <article class="panel donut-panel">
+          <h2>Mood mix</h2>
+          <div class="donut">
+            <div>
+              <strong>128</strong>
+              <span>Reflections</span>
+            </div>
+          </div>
+          <div class="category-list">
+            @for (category of categories; track category.label) {
+              <p><i [style.background]="category.color"></i>{{ category.label }}<strong>{{ category.value }}</strong></p>
+            }
+          </div>
+        </article>
+
+        <article class="panel mini-panel">
+          <div class="panel-heading">
+            <h2>Entry rhythm</h2>
+            <span>Last 6 months</span>
+          </div>
+          <div class="bar-chart">
+            @for (bar of visitors; track $index) {
+              <div><span [class.hot]="$index === 3" [style.height.%]="bar"></span><small>{{ ['Jan','Feb','Mar','Apr','May','Jun'][$index] }}</small></div>
+            }
+          </div>
+        </article>
+      </aside>
     </section>
   </div>
 </div>

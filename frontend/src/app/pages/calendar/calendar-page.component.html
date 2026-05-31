@@ -1,39 +1,33 @@
 <div class="calendar-page">
   <div class="calendar-inner">
-    <header class="calendar-header">
-      <div>
-        <p class="eyebrow">Calendar</p>
-        <h1>{{ currentMonth }}</h1>
-      </div>
-      <div class="header-actions">
-        <div class="segmented" aria-label="Calendar view">
-          <button type="button" [class.active]="view === 'month'" (click)="setView('month')">Month</button>
-          <button type="button" [class.active]="view === 'week'" (click)="setView('week')">Week</button>
+    <section class="schedule-shell">
+      <main class="month-panel">
+        <div class="month-toolbar">
+          <div class="month-nav">
+            <button type="button" aria-label="Previous month">
+              <svg lucideChevronLeft size="18"></svg>
+            </button>
+            <button type="button" aria-label="Next month">
+              <svg lucideChevronRight size="18"></svg>
+            </button>
+          </div>
+
+          <h2>{{ currentMonth }}</h2>
+
+          <button class="view-btn" type="button" (click)="setView(view === 'month' ? 'week' : 'month')">
+            <span>Show:</span>
+            <strong>{{ view === 'month' ? 'Month' : 'Week' }}</strong>
+            <svg lucideChevronDown size="16"></svg>
+          </button>
         </div>
-        <button class="outline-btn" type="button">
-          <svg lucideDownload size="16"></svg>
-          Export
-        </button>
-      </div>
-    </header>
 
-    <section class="summary-row" aria-label="Calendar summary">
-      <article>
-        <span>Logged</span>
-        <strong>{{ completedDays }}</strong>
-      </article>
-      <article>
-        <span>Steady</span>
-        <strong>{{ steadyDays }}</strong>
-      </article>
-      <article>
-        <span>Needs attention</span>
-        <strong>{{ difficultDays }}</strong>
-      </article>
-    </section>
+        <div class="mood-legend" aria-label="Mood legend">
+          <span class="legend-great">Great</span>
+          <span class="legend-good">Steady</span>
+          <span class="legend-neutral">Mixed</span>
+          <span class="legend-bad">Low</span>
+        </div>
 
-    <section class="calendar-shell">
-      <div class="month-card">
         <div class="weekdays">
           @for (weekday of weekdays; track weekday) {
             <span>{{ weekday }}</span>
@@ -54,42 +48,17 @@
               [class.day-selected]="selectedDay.id === day.id"
               (click)="selectDay(day)"
             >
-              <span class="day-top">
-                <span class="day-number">{{ day.day }}</span>
-                @if (day.isToday) {
-                  <span class="today-dot" aria-label="Today"></span>
-                }
-              </span>
-              <span class="day-bottom">
-                <span class="mood-dot"></span>
-                <span>{{ moodTone(day.mood) }}</span>
-              </span>
+              <span class="day-number">{{ day.day }}</span>
+              @if (!day.isFuture) {
+                <span class="mood-chip">{{ moodLabel(day.mood) }}</span>
+                <span class="entry-count">
+                  {{ day.mood === 'great' ? '3' : day.mood === 'good' ? '2' : '1' }} entries
+                </span>
+              }
             </button>
           }
         </div>
-      </div>
-
-      <aside class="detail-card">
-        <p class="detail-date">{{ selectedWeekday }} · Day {{ selectedDay.day }}</p>
-        <div class="detail-mood">
-          <span
-            class="detail-marker"
-            [class.detail-marker--great]="selectedDay.mood === 'great'"
-            [class.detail-marker--good]="selectedDay.mood === 'good'"
-            [class.detail-marker--neutral]="selectedDay.mood === 'neutral'"
-            [class.detail-marker--bad]="selectedDay.mood === 'bad'"
-          ></span>
-          <div>
-            <strong>{{ moodLabel(selectedDay.mood) }}</strong>
-            <p>{{ selectedDay.isFuture ? 'Planned reflection slot' : 'Recorded reflection' }}</p>
-          </div>
-        </div>
-        <p class="detail-note">{{ selectedDay.note }}</p>
-        <div class="detail-meta">
-          <span>Status</span>
-          <strong>{{ moodTone(selectedDay.mood) }}</strong>
-        </div>
-      </aside>
+      </main>
     </section>
   </div>
 </div>

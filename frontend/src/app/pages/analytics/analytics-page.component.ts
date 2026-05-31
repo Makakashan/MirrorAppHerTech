@@ -1,15 +1,14 @@
 import { Component, effect } from '@angular/core';
-import { LucideDownload } from '@lucide/angular';
 import { MoodLineChartComponent } from '../../components/mood-line-chart/mood-line-chart.component';
 import { ChartPoint, Metrics } from '../../models/metrics.model';
 import { MetricsService } from '../../services/metrics.service';
 
-type AnalyticsPeriod = '7d' | '30d';
+type AnalyticsPeriod = '7d' | '30d' | 'monthly';
 
 @Component({
   selector: 'app-analytics-page',
   standalone: true,
-  imports: [MoodLineChartComponent, LucideDownload],
+  imports: [MoodLineChartComponent],
   templateUrl: './analytics-page.component.html',
   styleUrl: './analytics-page.component.scss',
 })
@@ -39,6 +38,25 @@ export class AnalyticsPageComponent {
     { label: 'Journal entries', value: 18 },
     { label: 'Check-ins', value: 12 },
     { label: 'Tagged triggers', value: 9 },
+  ];
+  readonly categories = [
+    { label: 'Calm', value: '48%', color: '#1cabb0' },
+    { label: 'Stress', value: '31%', color: '#0f766e' },
+    { label: 'Focus', value: '21%', color: '#7dd3fc' },
+  ];
+  readonly visitors = [62, 50, 58, 88, 38, 64];
+  readonly devices = [
+    { label: 'Notes', value: 58, color: '#1cabb0' },
+    { label: 'Chat', value: 27, color: '#0f766e' },
+    { label: 'Calendar', value: 15, color: '#64748b' },
+  ];
+  readonly departments = [
+    { area: 'Reflection', entries: '5/8', allocated: 34, utilization: '90%', score: '8.4' },
+    { area: 'Triggers', entries: '12/15', allocated: 24, utilization: '20%', score: '6.1' },
+    { area: 'Recovery', entries: '7/10', allocated: 12, utilization: '62%', score: '7.8' },
+    { area: 'Routines', entries: '9/20', allocated: 34, utilization: '58%', score: '8.0' },
+    { area: 'Sleep', entries: '11/14', allocated: 56, utilization: '55%', score: '7.2' },
+    { area: 'Work', entries: '12/15', allocated: 34, utilization: '72%', score: '7.6' },
   ];
 
   constructor(private metricsService: MetricsService) {

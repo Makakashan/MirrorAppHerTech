@@ -1,62 +1,77 @@
 <div class="chat">
+  <div class="chat-shell">
+    <section class="chat-workspace">
+      <div class="messages" #messagesEl>
+        @if (visibleMessages().length === 0 && !isTyping()) {
+          <section class="welcome">
+            <div class="welcome-copy">
+              <h1>Hello User</h1>
+              <p>How can I help you reflect today?</p>
+            </div>
+            <div class="prompt-grid">
+              @for (card of promptCards; track card.title) {
+                <button class="prompt-card" type="button" (click)="askSuggestion(card.title)">
+                  <span class="prompt-icon">
+                    @switch (card.icon) {
+                      @case ('sparkles') { <svg lucideSparkles size="16"></svg> }
+                      @case ('trend') { <svg lucideTrendingUp size="16"></svg> }
+                      @default { <svg lucideFileText size="16"></svg> }
+                    }
+                  </span>
+                  <strong>{{ card.title }}</strong>
+                  <span>{{ card.text }}</span>
+                </button>
+              }
+            </div>
+          </section>
+        } @else {
+          <div class="message-list">
+            @for (msg of visibleMessages(); track msg.id) {
+              <div class="message" [class.message--user]="msg.role === 'user'" [class.message--ai]="msg.role === 'ai'">
+                <div class="bubble-wrap">
+                  <div class="bubble">{{ msg.text }}</div>
+                  <span class="time">{{ msg.time }}</span>
+                </div>
+              </div>
+            }
 
-  <header class="chat-header">
-    <div class="header-left">
-      <div class="bot-avatar">
-        <svg lucideBot size="20"></svg>
-      </div>
-      <span class="bot-name">Mirror Assistant</span>
-    </div>
-    <button class="recent-btn">
-      <svg lucideClock3 size="14"></svg>
-      <span>Recent chats</span>
-    </button>
-  </header>
-
-  <div class="messages" #messagesEl>
-    @for (msg of messages(); track msg.id) {
-      <div class="message" [class.message--user]="msg.role === 'user'" [class.message--ai]="msg.role === 'ai'">
-        <div class="bubble-wrap">
-          <div class="bubble">{{ msg.text }}</div>
-          <span class="time">{{ msg.time }}</span>
-        </div>
-      </div>
-    }
-
-    @if (isTyping()) {
-      <div class="message message--ai">
-        <div class="bubble-wrap">
-          <div class="bubble bubble--typing">
-            <span></span><span></span><span></span>
+            @if (isTyping()) {
+              <div class="message message--ai">
+                <div class="bubble-wrap">
+                  <div class="bubble bubble--typing">
+                    <span></span><span></span><span></span>
+                  </div>
+                </div>
+              </div>
+            }
           </div>
-        </div>
+        }
       </div>
-    }
-  </div>
 
-  <div class="chat-footer">
-    <button class="more-btn" aria-label="More options">
-      <svg lucideEllipsis size="20"></svg>
-    </button>
-    <div class="input-wrap" [class.input-wrap--focused]="focused">
-      <textarea
-        class="chat-textarea"
-        placeholder="Type a message..."
-        [(ngModel)]="inputText"
-        rows="1"
-        (keydown)="onKeydown($event)"
-        (focus)="focused = true"
-        (blur)="focused = false"
-      ></textarea>
-      <button
-        class="send-btn"
-        (click)="send()"
-        [disabled]="!inputText.trim()"
-        aria-label="Send"
-      >
-        <svg lucideSend size="16"></svg>
-      </button>
-    </div>
+      <div class="chat-footer">
+        <div class="input-wrap" [class.input-wrap--focused]="focused">
+          <textarea
+            class="chat-textarea"
+            placeholder="Ask something..."
+            [(ngModel)]="inputText"
+            rows="1"
+            (keydown)="onKeydown($event)"
+            (focus)="focused = true"
+            (blur)="focused = false"
+          ></textarea>
+          <button
+            class="send-btn"
+            (click)="send()"
+            [disabled]="!inputText.trim()"
+            aria-label="Send"
+          >
+            <svg lucideArrowUp size="16"></svg>
+          </button>
+        </div>
+        <p class="chat-disclaimer">
+          Mirror is a reflection aid, not a mental health professional. It does not diagnose, label, or replace qualified care.
+        </p>
+      </div>
+    </section>
   </div>
-
 </div>
