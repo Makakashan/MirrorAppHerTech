@@ -1,0 +1,488 @@
+{
+  "users": [
+    {
+      "id": "user-001",
+      "name": "Mikołaj Wyjczowicz",
+      "email": "miko@example.com",
+      "timezone": "Europe/Warsaw",
+      "created_at": "2024-11-10T09:00:00Z",
+      "context": {
+        "occupation": "Product manager, startup z branży edtech",
+        "life_circumstances": [
+          {
+            "added_at": "2024-11-10",
+            "note": "Mam 30 lat, mieszkam sam. Cztery miesiące temu przeprowadziłem się do nowego miasta w celach zawodowych."
+          },
+          {
+            "added_at": "2024-11-28",
+            "note": "Pracuję zdalnie, praktycznie nie wychodzę z domu. Znajomych w okolicy prawie nie ma."
+          },
+          {
+            "added_at": "2025-01-05",
+            "note": "Od dłuższego czasu nie sypiam dobrze — myśli kręcą się w kółko po położeniu się spać."
+          },
+          {
+            "added_at": "2025-01-12",
+            "note": "Napisałem do przyjaciela z poprzedniego miasta, nie odpisał. Uświadomiłem sobie, że przez ostatni miesiąc nie widziałem nikogo poza współpracownikami na Zoomie."
+          }
+        ],
+        "tracking_prefs": {
+          "scales_visible": [
+            "anxiety",
+            "energy",
+            "mood",
+            "focus",
+            "irritability"
+          ],
+          "checkin_reminder": "09:00"
+        }
+      },
+      "current_scores": {
+        "anxiety": 7.2,
+        "energy": 4.1,
+        "mood": 4.8,
+        "openness": 6,
+        "focus": 5.3,
+        "irritability": 6.1,
+        "confidence": 0.83,
+        "sources": {
+          "chat": {
+            "weight": 0.5,
+            "message_count": 22
+          },
+          "checkin": {
+            "weight": 0.35,
+            "questions_answered": 8
+          },
+          "life": {
+            "weight": 0.15,
+            "entries": 4
+          }
+        },
+        "updated_at": "2025-01-15T21:40:00Z"
+      },
+      "snapshots": [
+        {
+          "date": "2025-01-13",
+          "scores": {
+            "anxiety": 8.1,
+            "energy": 3.2,
+            "mood": 3.9,
+            "focus": 4,
+            "irritability": 7.4
+          },
+          "confidence": 0.79,
+          "summary": "Wspominał o deadline'ie produktowym, skarżył się na bezsenność. Kilka razy wracał do tematu samotności.",
+          "triggers": ["deadline", "bezsenność", "izolacja"],
+          "source": "chat"
+        },
+        {
+          "date": "2025-01-14",
+          "scores": {
+            "anxiety": 7.5,
+            "energy": 4,
+            "mood": 4.5,
+            "focus": 5.1,
+            "irritability": 6
+          },
+          "confidence": 0.87,
+          "summary": "Deadline oddany, nastrój trochę lepszy. Napisał, że chce uregulować rytm snu.",
+          "triggers": ["ulga", "rytm snu"],
+          "source": "checkin"
+        },
+        {
+          "date": "2025-01-15",
+          "scores": {
+            "anxiety": 7.2,
+            "energy": 4.1,
+            "mood": 4.8,
+            "focus": 5.3,
+            "irritability": 6.1
+          },
+          "confidence": 0.83,
+          "summary": "Spokojny dzień, ale zauważył że znowu nie ma planów na weekend. Lęk jest tłem, nie ostrym stanem.",
+          "triggers": ["weekend", "pustka społeczna"],
+          "source": "chat"
+        }
+      ],
+      "checkin_results": [
+        {
+          "taken_at": "2025-01-13T09:05:00Z",
+          "duration_sec": 94,
+          "answers": [
+            {
+              "question": "Jak się teraz czujesz?",
+              "scale": "mood",
+              "answer": "2/5"
+            },
+            {
+              "question": "Jak dobrze spałeś?",
+              "scale": "energy",
+              "answer": "1/5"
+            },
+            {
+              "question": "Czy coś Cię dziś niepokoi?",
+              "scale": "anxiety",
+              "answer": "tak, deadline"
+            },
+            {
+              "question": "Jak łatwo Ci się teraz skupić?",
+              "scale": "focus",
+              "answer": "2/5"
+            },
+            {
+              "question": "Czy coś Cię wczoraj irytowało?",
+              "scale": "irritability",
+              "answer": "4/5"
+            }
+          ]
+        },
+        {
+          "taken_at": "2025-01-14T09:12:00Z",
+          "duration_sec": 78,
+          "answers": [
+            {
+              "question": "Jak się teraz czujesz?",
+              "scale": "mood",
+              "answer": "3/5"
+            },
+            {
+              "question": "Jak dobrze spałeś?",
+              "scale": "energy",
+              "answer": "2/5"
+            },
+            {
+              "question": "Czy coś Cię dziś niepokoi?",
+              "scale": "anxiety",
+              "answer": "mniej niż wczoraj"
+            },
+            {
+              "question": "Jak łatwo Ci się teraz skupić?",
+              "scale": "focus",
+              "answer": "3/5"
+            },
+            {
+              "question": "Czy coś Cię wczoraj irytowało?",
+              "scale": "irritability",
+              "answer": "2/5"
+            }
+          ]
+        }
+      ],
+      "life_entries": [
+        {
+          "entry_date": "2025-01-10",
+          "category": "work",
+          "content": "Ostatni tydzień przed releasem. Codziennie calle, poprawki, konflikty z devami o terminy. Zasypiam po 2 w nocy.",
+          "extracted": {
+            "triggers": ["deadline", "konflikt", "bezsenność"],
+            "context_tags": [
+              "high_workload",
+              "poor_sleep",
+              "interpersonal_conflict"
+            ]
+          }
+        },
+        {
+          "entry_date": "2025-01-15",
+          "category": "health",
+          "content": "Próbowałem iść spać o 23, nie wyszło. Leżałem i myślałem o następnym kwartale. Wstałem o 1:30, poczytałem, zasnąłem około 3.",
+          "extracted": {
+            "triggers": ["bezsenność", "ruminacja"],
+            "context_tags": ["poor_sleep", "overthinking"]
+          }
+        }
+      ],
+      "chat_excerpts": [
+        {
+          "date": "2025-01-10",
+          "quote": "Może po prostu taki jestem — nie potrzebuję dużo ludzi wokół siebie.",
+          "context_tag": "rationalization_of_isolation"
+        },
+        {
+          "date": "2025-01-13",
+          "quote": "Czuję się jakbym był na autopilocie. Robię rzeczy, ale nic nie czuję.",
+          "context_tag": "emotional_numbness"
+        },
+        {
+          "date": "2025-01-14",
+          "quote": "Jak skończy się ten projekt, to wszystko będzie lepiej. Muszę tylko przetrwać.",
+          "context_tag": "deferred_living"
+        },
+        {
+          "date": "2025-01-15",
+          "quote": "Nie wiem czemu, ale w weekendy jest gorzej niż w tygodniu roboczym.",
+          "context_tag": "weekend_anxiety"
+        }
+      ],
+      "patterns": [
+        {
+          "description": "Lęk gwałtownie rośnie pod koniec tygodnia roboczego i utrzymuje się do niedzieli",
+          "first_seen_at": "2024-12-01",
+          "occurrence_count": 6,
+          "meta": {
+            "scales_involved": ["anxiety", "irritability"],
+            "temporal": "weekly"
+          }
+        },
+        {
+          "description": "Po poruszeniu tematów społecznych (znajomi, plany, weekend) nastrój spada o 1–2 punkty w tej samej sesji",
+          "first_seen_at": "2024-12-15",
+          "occurrence_count": 4,
+          "meta": {
+            "scales_involved": ["mood", "openness"],
+            "temporal": "intra-session"
+          }
+        },
+        {
+          "description": "Powtarzający się schemat odraczania — trudności są tymczasowe, życie zacznie się 'po'",
+          "first_seen_at": "2025-01-05",
+          "occurrence_count": 3,
+          "meta": {
+            "scales_involved": ["mood", "openness"],
+            "temporal": "cross-session"
+          }
+        }
+      ]
+    },
+    {
+      "id": "user-002",
+      "name": "Magda Zezowska",
+      "email": "Magda@example.com",
+      "timezone": "Europe/Warsaw",
+      "created_at": "2024-12-01T14:30:00Z",
+      "context": {
+        "occupation": "Graficzka, freelance",
+        "life_circumstances": [
+          {
+            "added_at": "2024-12-01",
+            "note": "Mam 27 lat, mieszkam z partnerem Piorem. Pracuję z domu, nie mam stałego harmonogramu."
+          },
+          {
+            "added_at": "2024-12-18",
+            "note": "Przyjaciół mam sporo, regularnie się widujemy. To dużo daje — po takich spotkaniach czuję się naładowana."
+          },
+          {
+            "added_at": "2025-01-11",
+            "note": "Wzięłam kolejny projekt — rebranding małej kawiarni. Bardzo ciekawy, ale teraz równolegle idą 4 projekty. Nie wiem jak ustawić priorytety."
+          },
+          {
+            "added_at": "2025-01-14",
+            "note": "Spędziłam z Dimą wieczór bez telefonów, gotowaliśmy razem i oglądaliśmy serial. Od dawna tak się nie zrelaksowałam."
+          }
+        ],
+        "tracking_prefs": {
+          "scales_visible": ["energy", "mood", "openness", "focus", "anxiety"],
+          "checkin_reminder": "11:00"
+        }
+      },
+      "current_scores": {
+        "anxiety": 3.8,
+        "energy": 5.5,
+        "mood": 6.9,
+        "openness": 8.1,
+        "focus": 4.2,
+        "irritability": 3,
+        "confidence": 0.76,
+        "sources": {
+          "chat": {
+            "weight": 0.5,
+            "message_count": 14
+          },
+          "checkin": {
+            "weight": 0.35,
+            "questions_answered": 7
+          },
+          "life": {
+            "weight": 0.15,
+            "entries": 4
+          }
+        },
+        "updated_at": "2025-01-15T18:20:00Z"
+      },
+      "snapshots": [
+        {
+          "date": "2025-01-13",
+          "scores": {
+            "anxiety": 3.2,
+            "energy": 6.8,
+            "mood": 7.5,
+            "focus": 5,
+            "irritability": 2.5
+          },
+          "confidence": 0.72,
+          "summary": "Opowiadała o nowym projekcie z entuzjazmem. Rozmawiała o planach na weekend ze znajomymi.",
+          "triggers": ["nowy projekt", "inspiracja"],
+          "source": "chat"
+        },
+        {
+          "date": "2025-01-14",
+          "scores": {
+            "anxiety": 4.1,
+            "energy": 5.2,
+            "mood": 6.5,
+            "focus": 3.8,
+            "irritability": 3.5
+          },
+          "confidence": 0.8,
+          "summary": "Trudniej się skupić — za dużo otwartych zadań naraz. Przyznała, że prokrastynuje.",
+          "triggers": ["przeciążenie zadaniami", "prokrastynacja"],
+          "source": "checkin"
+        },
+        {
+          "date": "2025-01-15",
+          "scores": {
+            "anxiety": 3.8,
+            "energy": 5.5,
+            "mood": 6.9,
+            "focus": 4.2,
+            "irritability": 3
+          },
+          "confidence": 0.76,
+          "summary": "Dobry nastrój, ale przyznała że boi się zawieść klientów przez przeciążenie. Energia jest, skupienie się ulatnia.",
+          "triggers": ["strach przed zawiedzieniem", "przeciążenie"],
+          "source": "chat"
+        }
+      ],
+      "checkin_results": [
+        {
+          "taken_at": "2025-01-13T11:08:00Z",
+          "duration_sec": 112,
+          "answers": [
+            {
+              "question": "Jak się teraz czujesz?",
+              "scale": "mood",
+              "answer": "5/5"
+            },
+            {
+              "question": "Jak dobrze spałaś?",
+              "scale": "energy",
+              "answer": "4/5"
+            },
+            {
+              "question": "Czy coś Cię dziś niepokoi?",
+              "scale": "anxiety",
+              "answer": "nie, wszystko ok"
+            },
+            {
+              "question": "Jak łatwo Ci się teraz skupić?",
+              "scale": "focus",
+              "answer": "3/5"
+            },
+            {
+              "question": "Czy coś Cię wczoraj irytowało?",
+              "scale": "irritability",
+              "answer": "1/5"
+            }
+          ]
+        },
+        {
+          "taken_at": "2025-01-14T11:22:00Z",
+          "duration_sec": 88,
+          "answers": [
+            {
+              "question": "Jak się teraz czujesz?",
+              "scale": "mood",
+              "answer": "4/5"
+            },
+            {
+              "question": "Jak dobrze spałaś?",
+              "scale": "energy",
+              "answer": "3/5"
+            },
+            {
+              "question": "Czy coś Cię dziś niepokoi?",
+              "scale": "anxiety",
+              "answer": "trochę, deadline na logo"
+            },
+            {
+              "question": "Jak łatwo Ci się teraz skupić?",
+              "scale": "focus",
+              "answer": "2/5"
+            },
+            {
+              "question": "Czy coś Cię wczoraj irytowało?",
+              "scale": "irritability",
+              "answer": "2/5"
+            }
+          ]
+        }
+      ],
+      "life_entries": [
+        {
+          "entry_date": "2025-01-11",
+          "category": "work",
+          "content": "Wzięłam kolejny projekt — rebranding kawiarni. Bardzo mnie wciągnął, ale teraz mam 4 projekty równolegle. Nie wiem jak to ogarnąć.",
+          "extracted": {
+            "triggers": ["przeciążenie", "brak priorytetów"],
+            "context_tags": [
+              "overcommitment",
+              "high_workload",
+              "creative_excitement"
+            ]
+          }
+        },
+        {
+          "entry_date": "2025-01-14",
+          "category": "relationships",
+          "content": "Wieczór z Dimą bez telefonów — gotowanie i serial. Od dawna tak się nie zrelaksowałam.",
+          "extracted": {
+            "triggers": ["odpoczynek", "bliskość", "regeneracja"],
+            "context_tags": ["social_support", "recovery", "positive_routine"]
+          }
+        }
+      ],
+      "chat_excerpts": [
+        {
+          "date": "2025-01-11",
+          "quote": "Nie umiem odmawiać projektom, które są ciekawe. Chyba to mój problem.",
+          "context_tag": "difficulty_setting_limits"
+        },
+        {
+          "date": "2025-01-13",
+          "quote": "Jak już skończy się ten projekt, to zwolnię. Na razie muszę dowieźć.",
+          "context_tag": "deferred_rest"
+        },
+        {
+          "date": "2025-01-14",
+          "quote": "Boję się, że jak powiem klientowi że nie zdążę, to stracę go na zawsze.",
+          "context_tag": "fear_of_disappointing"
+        },
+        {
+          "date": "2025-01-15",
+          "quote": "Chyba po prostu lubię mieć dużo na głowie. Może tak działam najlepiej?",
+          "context_tag": "rationalization_of_overcommitment"
+        }
+      ],
+      "patterns": [
+        {
+          "description": "Skupienie spada, gdy aktywnych projektów jest więcej niż trzy — nawet przy wysokim nastroju",
+          "first_seen_at": "2024-12-20",
+          "occurrence_count": 5,
+          "meta": {
+            "scales_involved": ["focus", "mood"],
+            "temporal": "concurrent"
+          }
+        },
+        {
+          "description": "Po wieczorach z partnerem bez pracy następny dzień zaczyna się z wyraźnie wyższą energią",
+          "first_seen_at": "2025-01-05",
+          "occurrence_count": 3,
+          "meta": {
+            "scales_involved": ["energy", "mood"],
+            "temporal": "next-day"
+          }
+        },
+        {
+          "description": "Powtarzający się schemat odraczania odpoczynku — 'zwolnię po tym projekcie'",
+          "first_seen_at": "2025-01-08",
+          "occurrence_count": 4,
+          "meta": {
+            "scales_involved": ["energy", "anxiety"],
+            "temporal": "cross-session"
+          }
+        }
+      ]
+    }
+  ]
+}
